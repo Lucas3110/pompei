@@ -308,11 +308,15 @@ a { color: inherit; text-decoration: none; }
   z-index: 0;
   overflow: hidden;
 }
-/* Imágenes de contenido: marco sutil + esquinas redondeadas */
-.scene__media,
-.closing__media {
+/* Escenas: marco sutil + esquinas redondeadas */
+.scene__media {
   inset: var(--frame);
   border-radius: var(--radius);
+}
+/* Cierre: borde a borde, esquinas redondeadas por clip-path (más confiable que overflow+border-radius con parallax) */
+.closing__media {
+  inset: 0;
+  clip-path: inset(0 round var(--radius));
 }
 .hero__img,
 .scene__img,
