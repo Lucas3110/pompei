@@ -41,26 +41,32 @@
     var nodes = document.querySelectorAll("[data-split]");
     nodes.forEach(function (el) {
       el.classList.remove("reveal");
-      var text = el.textContent;
+      // Conservamos los nodos originales (texto + <br> de saltos forzados)
+      var original = Array.prototype.slice.call(el.childNodes);
       el.textContent = "";
       var idx = 0;
-      var words = text.split(" ");
-      for (var w = 0; w < words.length; w++) {
-        if (w > 0) el.appendChild(document.createTextNode(" "));
-        var word = words[w];
-        // Cada palabra en un contenedor inline-block para que no se parta mid-word
-        var wordWrap = document.createElement("span");
-        wordWrap.style.cssText = "display:inline-block;white-space:nowrap";
-        for (var i = 0; i < word.length; i++) {
-          var span = document.createElement("span");
-          span.className = "ch";
-          span.textContent = word[i];
-          span.style.transitionDelay = Math.min(idx, 42) * 0.028 + "s";
-          wordWrap.appendChild(span);
-          idx++;
+      original.forEach(function (node) {
+        if (node.nodeType === 1 && node.tagName === "BR") {
+          el.appendChild(document.createElement("br"));
+          return;
         }
-        el.appendChild(wordWrap);
-      }
+        var words = (node.textContent || "").split(" ").filter(Boolean);
+        words.forEach(function (word, w) {
+          if (w > 0) el.appendChild(document.createTextNode(" "));
+          // Cada palabra en un contenedor inline-block para que no se parta mid-word
+          var wordWrap = document.createElement("span");
+          wordWrap.style.cssText = "display:inline-block;white-space:nowrap";
+          for (var i = 0; i < word.length; i++) {
+            var span = document.createElement("span");
+            span.className = "ch";
+            span.textContent = word[i];
+            span.style.transitionDelay = Math.min(idx, 42) * 0.028 + "s";
+            wordWrap.appendChild(span);
+            idx++;
+          }
+          el.appendChild(wordWrap);
+        });
+      });
     });
   }
 

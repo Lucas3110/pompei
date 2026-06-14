@@ -9,7 +9,6 @@
   /* Paleta (extraída del material: ceniza, brasa, lava, ámbar) */
   --c-bg:      #15100E;   /* negro ceniza            */
   --c-bg-2:    #0C0908;   /* estrato profundo        */
-  --c-earth:   #3A2A22;   /* tierra quemada          */
   --c-ember:   #B23A2E;   /* rojo Vesubio            */
   --c-lava:    #E4502A;   /* lava                    */
   --c-gold:    #E9A23B;   /* ámbar fundido           */
@@ -281,7 +280,7 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   text-align: center;
   padding: var(--pad);
-  padding-top: clamp(5rem, 17vh, 11rem);
+  padding-top: clamp(4rem, 14vh, 9rem);
   overflow: hidden;
 }
 .hero__media,
@@ -319,14 +318,15 @@ a { color: inherit; text-decoration: none; }
 /* ---- Fondo diseñado del hero (Vesubio · CSS + SVG, sin imagen) ---- */
 .hero__media--art { background: #0a0706; }
 
+/* Efecto ámbar: incandescencia del magma/Vesubio irradiando contra el cielo de ceniza (estático, sin pulso) */
 .hero__sky {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(32% 22% at 49% 53%, rgba(233, 162, 59, 0.8), transparent 70%),
-    radial-gradient(88% 55% at 50% 60%, rgba(228, 80, 42, 0.5), rgba(178, 58, 46, 0.18) 46%, transparent 72%),
-    radial-gradient(140% 80% at 50% 96%, rgba(58, 28, 18, 0.6), transparent 62%),
-    linear-gradient(180deg, #0a0808 0%, #120d0b 44%, #1a100d 66%, #0e0807 100%);
+    radial-gradient(36% 34% at 50% 59%, rgba(233, 162, 59, 0.72), transparent 80%),
+    radial-gradient(95% 78% at 50% 66%, rgba(228, 80, 42, 0.4), rgba(178, 58, 46, 0.13) 52%, transparent 84%),
+    radial-gradient(140% 82% at 50% 98%, rgba(58, 28, 18, 0.6), transparent 66%),
+    linear-gradient(180deg, #0a0808 0%, #120d0b 46%, #1a100d 68%, #0e0807 100%);
 }
 
 .hero__mount {
@@ -335,24 +335,20 @@ a { color: inherit; text-decoration: none; }
   bottom: 0;
   width: 100%;
   height: 64%;
+  transform: translateY(9%);
   display: block;
 }
 
+/* Capa de brillo screen sobre el cráter (sin animación de respiración) */
 .hero__glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(34% 24% at 49% 53%, rgba(233, 162, 59, 0.5), transparent 70%);
+  background: radial-gradient(42% 38% at 50% 60%, rgba(233, 162, 59, 0.38), transparent 78%);
   mix-blend-mode: screen;
-  transform-origin: 49% 55%;
-  animation: emberPulse 6.5s ease-in-out infinite;
-}
-@keyframes emberPulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50%      { opacity: 1;   transform: scale(1.07); }
 }
 
 @media (min-width: 768px) {
-  .hero__mount { height: 60%; }
+  .hero__mount { height: 60%; transform: translateY(10%); }
 }
 .hero__inner {
   position: relative;
@@ -676,8 +672,7 @@ a { color: inherit; text-decoration: none; }
   text-transform: uppercase;
 }
 .antithesis__line--bury {
-  color: var(--c-stone);
-  opacity: 0.85;
+  color: var(--c-bone);
 }
 .antithesis__line--keep {
   color: var(--c-bone);
@@ -724,7 +719,7 @@ a { color: inherit; text-decoration: none; }
   font-family: var(--font-serif);
   font-weight: 600;
   font-size: clamp(1.5rem, 5vw, 3.2rem);
-  line-height: 1.2;
+  line-height: 1.5;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--c-bone);
