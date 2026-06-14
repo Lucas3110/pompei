@@ -374,6 +374,7 @@
     if (!root) return;
     var handle = root.querySelector(".excavate__handle");
     if (!handle) return;
+    var grip = root.querySelector(".excavate__grip") || handle; // sólo el tirador captura el gesto
     var MIN = 4, MAX = 96, dig = 33, dragging = false;
 
     function set(v) {
@@ -386,18 +387,18 @@
       return ((clientY - r.top) / r.height) * 100;
     }
 
-    handle.addEventListener("pointerdown", function (e) {
+    grip.addEventListener("pointerdown", function (e) {
       dragging = true;
       root.classList.add("is-digging");
-      if (handle.setPointerCapture) handle.setPointerCapture(e.pointerId);
+      if (grip.setPointerCapture) grip.setPointerCapture(e.pointerId);
       set(pctFromY(e.clientY));
       e.preventDefault();
     });
-    handle.addEventListener("pointermove", function (e) {
+    grip.addEventListener("pointermove", function (e) {
       if (dragging) set(pctFromY(e.clientY));
     });
-    handle.addEventListener("pointerup", function () { dragging = false; });
-    handle.addEventListener("pointercancel", function () { dragging = false; });
+    grip.addEventListener("pointerup", function () { dragging = false; });
+    grip.addEventListener("pointercancel", function () { dragging = false; });
 
     handle.addEventListener("keydown", function (e) {
       var step = e.shiftKey ? 10 : 4;

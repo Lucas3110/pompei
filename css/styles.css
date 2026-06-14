@@ -32,6 +32,19 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --frame: clamp(10px, 1.3vw, 16px);   /* marco alrededor de las imágenes */
   --radius: clamp(18px, 2vw, 30px);    /* esquinas redondeadas */
+
+  /* ---------- Escala tipográfica ----------
+     Cuerpos en píxeles enteros (1rem = 16px).
+     Regla de interlineado: SIEMPRE = cuerpo + 2px (en rem exactos). */
+  --fs-2xs:  0.625rem;  --lh-2xs:  0.75rem;   /* 10 / 12 */
+  --fs-xs:   0.75rem;   --lh-xs:   0.875rem;  /* 12 / 14 */
+  --fs-sm:   0.875rem;  --lh-sm:   1rem;      /* 14 / 16 */
+  --fs-base: 1rem;      --lh-base: 1.125rem;  /* 16 / 18 */
+  --fs-md:   1.125rem;  --lh-md:   1.25rem;   /* 18 / 20 */
+  --fs-lg:   1.5rem;    --lh-lg:   1.625rem;  /* 24 / 26 */
+  --fs-xl:   2rem;      --lh-xl:   2.125rem;  /* 32 / 34 */
+  --fs-2xl:  3rem;      --lh-2xl:  3.125rem;  /* 48 / 50 — títulos de sección */
+  --fs-3xl:  4.5rem;    --lh-3xl:  4.625rem;  /* 72 / 74 — título ficha · año timeline */
 }
 
 /* ---------- 2. Reset / base ---------- */
@@ -50,7 +63,8 @@ body {
   color: var(--c-cream);
   font-family: var(--font-sans);
   font-weight: 400;
-  line-height: 1.6;
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
@@ -158,7 +172,8 @@ a { color: inherit; text-decoration: none; }
   transform: translateY(-50%) translateX(6px);
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: var(--fs-2xs);
+  line-height: var(--lh-2xs);
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -214,7 +229,8 @@ a { color: inherit; text-decoration: none; }
   gap: 0.55rem;
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--c-bone);
@@ -228,7 +244,8 @@ a { color: inherit; text-decoration: none; }
 }
 .masthead__meta {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.2em;
   color: var(--c-stone);
 }
@@ -357,7 +374,8 @@ a { color: inherit; text-decoration: none; }
 }
 .hero__eyebrow {
   font-family: var(--font-mono);
-  font-size: clamp(0.65rem, 2vw, 0.8rem);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--c-gold);
@@ -429,13 +447,15 @@ a { color: inherit; text-decoration: none; }
   font-family: var(--font-sans);
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(1.2rem, 4.5vw, 2.1rem);
+  font-size: var(--fs-xl);
+  line-height: var(--lh-xl);
   color: var(--c-cream);
   letter-spacing: 0.01em;
 }
 .hero__byline {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.2em;
   color: var(--c-stone);
   margin-top: 2rem;
@@ -456,7 +476,8 @@ a { color: inherit; text-decoration: none; }
 }
 .scroll-cue__text {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
+  line-height: var(--lh-2xs);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--c-cream);
@@ -531,7 +552,8 @@ a { color: inherit; text-decoration: none; }
 .card--right { margin-left: auto; }
 .card__eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -542,8 +564,8 @@ a { color: inherit; text-decoration: none; }
 .card__text {
   font-family: var(--font-sans);
   font-weight: 400;
-  font-size: clamp(1.1rem, 2.7vw, 1.45rem);
-  line-height: 1.5;
+  font-size: var(--fs-md);
+  line-height: var(--lh-md);
   color: var(--c-cream);
 }
 .card__text em { color: var(--c-gold); font-style: italic; }
@@ -562,7 +584,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ---------- Excavar el molde (slider de revelado) ---------- */
-.excavate { --dig: 42%; }
+.excavate { --dig: 33%; }
 .excavate__stage {
   position: absolute;
   inset: 0;
@@ -600,8 +622,9 @@ a { color: inherit; text-decoration: none; }
   height: 48px;
   transform: translateY(-50%);
   z-index: 5;
-  cursor: ns-resize;
-  touch-action: none;
+  /* La banda no captura el tacto (para no bloquear el scroll en mobile);
+     sólo el tirador (.excavate__grip) recibe el gesto de arrastre */
+  pointer-events: none;
   display: grid;
   place-items: center;
 }
@@ -627,6 +650,9 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
   display: grid;
   place-items: center;
+  pointer-events: auto;
+  cursor: ns-resize;
+  touch-action: none;
 }
 .excavate__grip::before {
   content: "⇅";
@@ -643,7 +669,8 @@ a { color: inherit; text-decoration: none; }
   transform: translateX(-50%);
   z-index: 5;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--c-cream);
@@ -667,8 +694,8 @@ a { color: inherit; text-decoration: none; }
 .antithesis__line {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: clamp(1.6rem, 5.6vw, 3.1rem);
-  line-height: 1.18;
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-2xl);
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -711,7 +738,8 @@ a { color: inherit; text-decoration: none; }
 .break__inner { max-width: 60rem; }
 .break__tag {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.3em;
   color: var(--c-stone);
   margin-bottom: 1.6rem;
@@ -719,8 +747,8 @@ a { color: inherit; text-decoration: none; }
 .break__line {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: clamp(1.5rem, 5vw, 3.2rem);
-  line-height: 1.5;
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-2xl);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--c-bone);
@@ -737,12 +765,15 @@ a { color: inherit; text-decoration: none; }
 }
 .break__caption {
   font-family: var(--font-sans);
-  font-size: clamp(1rem, 2.4vw, 1.3rem);
+  font-size: var(--fs-md);
+  line-height: var(--lh-md);
   color: var(--c-cream);
-  max-width: 34ch;
+  max-width: 46ch;
   margin: 1.4rem auto 0;
+  text-wrap: balance;
 }
-.break__caption em { color: var(--c-gold); }
+/* La frase enfática se mantiene íntegra (no se parte "mapa" a otra línea) */
+.break__caption em { color: var(--c-gold); white-space: nowrap; }
 
 /* ---------- 10. LÍNEA DE TIEMPO ---------- */
 /* Base = mobile: línea vertical clásica */
@@ -761,7 +792,8 @@ a { color: inherit; text-decoration: none; }
 }
 .timeline__kicker {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--c-ember);
@@ -770,15 +802,16 @@ a { color: inherit; text-decoration: none; }
 .timeline__title {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: clamp(1.8rem, 6vw, 3.2rem);
-  line-height: 1.12;
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-2xl);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--c-bone);
 }
 .timeline__hint {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.12em;
   color: var(--c-stone);
   margin-top: 1.2rem;
@@ -836,8 +869,8 @@ a { color: inherit; text-decoration: none; }
 .tl-item__year {
   font-family: var(--font-serif);
   font-weight: 900;
-  font-size: clamp(2.4rem, 11vw, 4.6rem);
-  line-height: 0.9;
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-3xl);
   color: var(--c-gold);
 }
 .tl-item__year span {
@@ -849,7 +882,8 @@ a { color: inherit; text-decoration: none; }
 .tl-item__head {
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
   letter-spacing: 0.02em;
   color: var(--c-ember);
   margin: 0.7rem 0 0.5rem;
@@ -857,7 +891,8 @@ a { color: inherit; text-decoration: none; }
 }
 .tl-item__text {
   font-family: var(--font-sans);
-  font-size: clamp(0.95rem, 2.4vw, 1.05rem);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-sm);
   color: var(--c-cream);
   max-width: 42ch;
 }
@@ -896,8 +931,8 @@ a { color: inherit; text-decoration: none; }
 .closing__title {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: clamp(1.6rem, 4.2vw, 2.8rem);
-  line-height: 1.12;
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-2xl);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--c-bone);
@@ -908,7 +943,8 @@ a { color: inherit; text-decoration: none; }
   font-family: var(--font-sans);
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(1.2rem, 4vw, 2rem);
+  font-size: var(--fs-xl);
+  line-height: var(--lh-xl);
   color: var(--c-gold);
   margin-top: 0.6rem;
 }
@@ -924,7 +960,8 @@ a { color: inherit; text-decoration: none; }
 .colophon__top { max-width: 52rem; margin-bottom: clamp(2.5rem, 8vh, 5rem); }
 .colophon__tag {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.22em;
   color: var(--c-stone);
   margin-bottom: 1.4rem;
@@ -932,13 +969,15 @@ a { color: inherit; text-decoration: none; }
 .colophon__title {
   font-family: var(--font-serif);
   font-weight: 900;
-  font-size: clamp(2.2rem, 8vw, 4.4rem);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-3xl);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--c-bone);
 }
 .colophon__lead {
-  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  font-size: var(--fs-md);
+  line-height: var(--lh-md);
   color: var(--c-cream);
   margin-top: 1.2rem;
 }
@@ -958,12 +997,12 @@ a { color: inherit; text-decoration: none; }
 .field__q {
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: clamp(1.1rem, 3.2vw, 1.4rem);
-  line-height: 1.25;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-lg);
   color: var(--c-gold);
   margin-bottom: 0.9rem;
 }
-.field__a { color: var(--c-cream); font-size: 0.98rem; }
+.field__a { color: var(--c-cream); font-size: var(--fs-sm); line-height: var(--lh-sm); }
 .field__a em { color: var(--c-gold); font-style: italic; }
 .field__a strong { color: var(--c-bone); }
 .field__list { margin-top: 0.9rem; display: grid; gap: 0.6rem; }
@@ -971,7 +1010,8 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   padding-left: 1.2rem;
   color: var(--c-cream);
-  font-size: 0.95rem;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-sm);
 }
 .field__list li::before {
   content: "▸";
@@ -993,7 +1033,8 @@ a { color: inherit; text-decoration: none; }
 }
 .rhet__name {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.05em;
   color: var(--c-lava);
   min-width: 11rem;
@@ -1020,18 +1061,19 @@ a { color: inherit; text-decoration: none; }
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
-.swatch__name { font-size: 0.85rem; color: var(--c-cream); }
+.swatch__name { font-size: var(--fs-sm); line-height: var(--lh-sm); color: var(--c-cream); }
 .swatch__hex {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   color: var(--c-stone);
   letter-spacing: 0.05em;
 }
 
 /* Tipografía */
 .type-spec { padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
-.type-spec__sample { font-size: 1.7rem; color: var(--c-bone); line-height: 1.1; }
-.type-spec__role { font-size: 0.85rem; color: var(--c-stone); margin-top: 0.3rem; }
+.type-spec__sample { font-size: var(--fs-lg); line-height: var(--lh-lg); color: var(--c-bone); }
+.type-spec__role { font-size: var(--fs-sm); line-height: var(--lh-sm); color: var(--c-stone); margin-top: 0.3rem; }
 
 .colophon__foot {
   margin-top: clamp(3rem, 8vh, 5rem);
@@ -1042,12 +1084,14 @@ a { color: inherit; text-decoration: none; }
 .colophon__sign {
   font-family: var(--font-sans);
   font-style: italic;
-  font-size: 1.2rem;
+  font-size: var(--fs-md);
+  line-height: var(--lh-md);
   color: var(--c-cream);
 }
 .colophon__by {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   letter-spacing: 0.1em;
   color: var(--c-stone);
   margin-top: 0.8rem;
@@ -1152,6 +1196,26 @@ a { color: inherit; text-decoration: none; }
 
 @media (min-width: 1100px) {
   .scene__inner { padding-inline: clamp(3rem, 7vw, 7rem); }
+}
+
+/* ---- Ajustes para pantallas chicas: escala de display baja un escalón ---- */
+@media (max-width: 600px) {
+  /* Se redefinen los tokens de display (siguen siendo px enteros · interlineado = cuerpo + 2px) */
+  :root {
+    --fs-3xl: 2.75rem;  --lh-3xl: 2.875rem;  /* 44 / 46 */
+    --fs-2xl: 2rem;     --lh-2xl: 2.125rem;  /* 32 / 34 */
+    --fs-xl:  1.5rem;   --lh-xl:  1.625rem;  /* 24 / 26 */
+    --fs-lg:  1.25rem;  --lh-lg:  1.375rem;  /* 20 / 22 */
+  }
+  /* El título "POMPEYA" usa nowrap; lo achicamos para que entre sin desbordar */
+  .hero__title,
+  .hero__title-lava { font-size: clamp(1.9rem, 10.5vw, 2.6rem); }
+  .hero__eyebrow { letter-spacing: 0.16em; }
+  .masthead__brand { letter-spacing: 0.05em; }
+  /* El meta "79 d.C. — Hoy" es decorativo y redundante con el eyebrow; se oculta en mobile */
+  .masthead__meta { display: none; }
+  /* En mobile el cierre puede envolver (el nowrap es sólo para desktop) */
+  .closing__title { white-space: normal; }
 }
 
 /* =====================================================================
