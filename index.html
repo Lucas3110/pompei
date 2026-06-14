@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pompeya — La ciudad borrada del mapa</title>
+  <meta name="description" content="Scrollytelling sobre Pompeya: de la ciudad próspera a la memoria que la ceniza conservó. Trabajo de Comunicación Visual y Diseño Gráfico." />
+  <meta name="author" content="Lucas Rodríguez" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pompeya — La ciudad borrada del mapa" />
+  <meta property="og:description" content="Una narrativa visual con scroll sobre la ciudad que el Vesubio sepultó y conservó." />
+  <meta property="og:type" content="website" />
+
+  <!-- Favicon (volcán minimal, SVG embebido) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2315100E'/%3E%3Cpath d='M6 26 L13 11 L19 11 L26 26 Z' fill='%23B23A2E'/%3E%3Cpath d='M13 11 L16 5 L19 11 Z' fill='%23E9A23B'/%3E%3C/svg%3E" />
+
+  <!-- Tipografías self-hosted (offline): Cinzel (capitales romanas · títulos) + Montserrat (texto · interfaz) -->
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/styles.css?v=3" />
+</head>
+
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- Lienzo de ceniza cayendo (atmósfera) -->
+  <canvas class="ash" aria-hidden="true"></canvas>
+
+  <!-- Barra de progreso superior -->
+  <div class="scroll-progress" aria-hidden="true"><span class="scroll-progress__bar"></span></div>
+
+  <!-- Navegación por estratos (descender = excavar) -->
+  <nav class="strata" aria-label="Navegación por capas">
+    <ul class="strata__list">
+      <li><a class="strata__link" href="#portada"><span class="strata__tick" aria-hidden="true"></span><span class="strata__name">Superficie</span></a></li>
+      <li><a class="strata__link" href="#prosperidad"><span class="strata__tick" aria-hidden="true"></span><span class="strata__name">La ciudad viva</span></a></li>
+      <li><a class="strata__link" href="#temblores"><span class="strata__tick" aria-hidden="true"></span><span class="strata__name">La calma</span></a></li>
+      <li><a class="strata__link" href="#erupcion"><span class="strata__tick" aria-hidden="true"></span><span class="strata__name">La furia</span></a></li>
+      <li><a class="strata__link" href="#ceniza"><span class="strata__tick" aria-hidden="true"></span><span class="strata__name">La ceniza</span></a></li>
+      <li><a class="strata__link" href="#linea-de-tiempo"><span class="strata__tick" aria-hidden="true"></span><span class="strata__name">Cronología</span></a></li>
+      <li><a class="strata__link" href="#cierre"><span class="strata__tick" aria-hidden="true"></span><span class="strata__name">El presente</span></a></li>
+      <li><a class="strata__link" href="#ficha-tecnica"><span class="strata__tick" aria-hidden="true"></span><span class="strata__name">Ficha técnica</span></a></li>
+    </ul>
+  </nav>
+
+  <!-- Encabezado mínimo -->
+  <header class="masthead">
+    <a class="masthead__brand" href="#portada">
+      <span class="masthead__mark" aria-hidden="true"></span>
+      Pompeya
+    </a>
+    <span class="masthead__meta">79&nbsp;d.C. — Hoy</span>
+  </header>
+
+  <main id="contenido">
+
+    <!-- ============ PORTADA ============ -->
+    <section class="hero" id="portada" data-scene>
+      <figure class="hero__media hero__media--art" aria-hidden="true">
+        <div class="hero__sky"></div>
+        <svg class="hero__mount" viewBox="0 0 1440 760" preserveAspectRatio="xMidYMax slice" focusable="false">
+          <defs>
+            <linearGradient id="vesuvio-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#0c0706" />
+              <stop offset="1" stop-color="#030202" />
+            </linearGradient>
+            <linearGradient id="vesuvio-plume" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0" stop-color="#E9A23B" stop-opacity="0.45" />
+              <stop offset="0.4" stop-color="#9a8d83" stop-opacity="0.20" />
+              <stop offset="1" stop-color="#9a8d83" stop-opacity="0" />
+            </linearGradient>
+            <filter id="vesuvio-soft" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="17" />
+            </filter>
+            <filter id="vesuvio-rim" x="-30%" y="-80%" width="160%" height="260%">
+              <feGaussianBlur stdDeviation="5" />
+            </filter>
+          </defs>
+          <!-- columna de humo / erupción -->
+          <path d="M690,360 C 744,262 744,180 702,90 C 696,76 684,76 678,90 C 636,180 636,262 690,360 Z"
+                fill="url(#vesuvio-plume)" filter="url(#vesuvio-soft)" />
+          <!-- cráter incandescente -->
+          <ellipse cx="690" cy="360" rx="42" ry="13" fill="#E9A23B" opacity="0.6" filter="url(#vesuvio-rim)" />
+          <!-- borde incandescente de la cresta -->
+          <path d="M0,640 C 240,615 460,470 650,360 C 678,344 690,362 712,354 C 740,342 760,378 980,452 C 1180,520 1320,585 1440,610"
+                fill="none" stroke="#E4502A" stroke-width="4" opacity="0.75" filter="url(#vesuvio-rim)" />
+          <!-- cuerpo del volcán -->
+          <path d="M0,640 C 240,615 460,470 650,360 C 678,344 690,362 712,354 C 740,342 760,378 980,452 C 1180,520 1320,585 1440,610 L1440,760 L0,760 Z"
+                fill="url(#vesuvio-fill)" />
+        </svg>
+        <div class="hero__glow"></div>
+        <div class="hero__scrim"></div>
+      </figure>
+
+      <div class="hero__inner">
+        <p class="hero__eyebrow reveal">Bahía de Nápoles · Año 79 d.C.</p>
+        <span class="hero__title-wrap">
+          <h1 class="hero__title reveal" data-split>Pompeya</h1>
+          <span class="hero__title-lava" aria-hidden="true">Pompeya</span>
+        </span>
+        <p class="hero__subtitle reveal">La ciudad borrada del mapa</p>
+        <p class="hero__byline reveal">Por Lucas Rodríguez</p>
+      </div>
+
+      <a class="scroll-cue" href="#prosperidad" aria-label="Comenzar a descender">
+        <span class="scroll-cue__text">Descender</span>
+        <span class="scroll-cue__line" aria-hidden="true"></span>
+      </a>
+    </section>
+
+    <!-- ============ 01 · LA CIUDAD VIVA ============ -->
+    <section class="scene" id="prosperidad" data-scene>
+      <figure class="scene__media">
+        <img class="scene__img" data-parallax="0.12" loading="lazy"
+             src="images/Captura%20de%20pantalla%202026-05-31%20115459.png"
+             alt="Reconstrucción ilustrada de Pompeya próspera, con casas, jardines y el Vesubio al fondo." />
+        <div class="scene__scrim scene__scrim--left"></div>
+      </figure>
+      <div class="scene__inner">
+        <article class="card card--left reveal">
+          <p class="card__eyebrow">01 — La ciudad viva</p>
+          <p class="card__text">
+            Antes de la tragedia, Pompeya era una ciudad ruidosa y próspera.
+            Mercados repletos, baños públicos, teatros, termas y hasta su propio anfiteatro.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ 02 · LA CALMA ============ -->
+    <section class="scene" id="temblores" data-scene>
+      <figure class="scene__media">
+        <img class="scene__img" data-parallax="0.12" loading="lazy"
+             src="images/2E4PY1D-0016b6a-e1692092443558.webp"
+             alt="Escena de calle pompeyana: comerciantes muestran alfombras a unas mujeres mientras la vida transcurre con normalidad." />
+        <div class="scene__scrim scene__scrim--right"></div>
+      </figure>
+      <div class="scene__inner">
+        <article class="card card--right reveal">
+          <p class="card__eyebrow">02 — La calma</p>
+          <p class="card__text">
+            Sus habitantes estaban acostumbrados a algunos temblores, pero no podían
+            imaginar que el volcán que dominaba el horizonte llevaba siglos
+            <em>acumulando su furia</em>.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ INTERSTICIAL CONCEPTUAL · TENSIÓN ============ -->
+    <section class="break break--tension" data-scene>
+      <div class="break__inner reveal">
+        <p class="break__tag">[ OTOÑO · 79 D.C. ]</p>
+        <p class="break__line" data-split>El día en que el cielo se volvió negro.</p>
+      </div>
+    </section>
+
+    <!-- ============ 03 · LA ERUPCIÓN ============ -->
+    <section class="scene scene--quake" id="erupcion" data-scene>
+      <figure class="scene__media">
+        <img class="scene__img" data-parallax="0.10" loading="lazy"
+             src="images/pompeii-textimage_345976828.JPG"
+             alt="Pintura nocturna de la erupción del Vesubio: una columna de fuego ilumina el cielo mientras la gente observa desde la orilla." />
+        <div class="scene__scrim scene__scrim--right"></div>
+      </figure>
+      <div class="scene__inner">
+        <article class="card card--right reveal">
+          <p class="card__eyebrow">03 — La furia</p>
+          <p class="card__text">
+            El Vesubio <em>despertó</em> con una violencia imposible de detener.
+            Una columna de gases, ceniza y material cubrió el cielo. En pocas horas,
+            la ciudad quedó sepultada. Miles de personas perdieron la vida sin poder escapar.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ 04 · LA ANTÍTESIS (ceniza que sepulta / conserva) ============ -->
+    <section class="scene scene--ash excavate" id="ceniza" data-scene>
+      <div class="excavate__stage">
+        <img class="excavate__img scene__img--mono" loading="lazy"
+             src="images/7-Kenro-Izu-Casa-degli-Amorini-Dorati-Pompei-2016-1-1200x900.jpg"
+             alt="Molde en yeso de una víctima de Pompeya tendido sobre un mosaico, entre columnas, fotografiado en blanco y negro." />
+        <div class="excavate__buried" aria-hidden="true">
+          <img class="excavate__img excavate__img--ash" src="images/7-Kenro-Izu-Casa-degli-Amorini-Dorati-Pompei-2016-1-1200x900.jpg" alt="" loading="lazy" />
+          <span class="excavate__veil"></span>
+        </div>
+        <div class="scene__scrim scene__scrim--bottom"></div>
+      </div>
+      <div class="excavate__handle" role="slider" tabindex="0"
+           aria-label="Excavar el molde para revelarlo"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="30" aria-orientation="horizontal">
+        <span class="excavate__grip" aria-hidden="true"></span>
+      </div>
+      <p class="excavate__hint" aria-hidden="true">Arrastrá para excavar</p>
+      <div class="scene__inner scene__inner--end">
+        <article class="antithesis reveal">
+          <p class="card__eyebrow card__eyebrow--light">04 — La paradoja</p>
+          <p class="antithesis__line antithesis__line--bury">La ceniza no solo sepultó.</p>
+          <p class="antithesis__line antithesis__line--keep">También conservó.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ INTERSTICIAL CONCEPTUAL · EL DATO ============ -->
+    <section class="break break--data" data-scene>
+      <div class="break__inner reveal">
+        <p class="break__tag">[ ESTRATO · SILENCIO ]</p>
+        <p class="break__figure" data-count="1669">1669</p>
+        <p class="break__caption">
+          años que la ciudad estuvo <em>fuera de todo mapa</em>,
+          sepultada bajo varios metros de ceniza.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ LÍNEA DE TIEMPO ============ -->
+    <section class="timeline" id="linea-de-tiempo" data-scene>
+      <div class="timeline__sticky">
+        <div class="timeline__heading">
+          <p class="timeline__kicker">Línea de tiempo</p>
+          <h2 class="timeline__title">De la erupción a la memoria</h2>
+          <p class="timeline__hint" aria-hidden="true">
+            <span class="timeline__hint-desktop">Desplazá para avanzar en el tiempo →</span>
+            <span class="timeline__hint-mobile">Desplazá hacia abajo ↓</span>
+          </p>
+        </div>
+
+        <div class="timeline__viewport">
+          <ol class="timeline__track">
+
+            <li class="tl-item" data-tl>
+              <span class="tl-item__dot" aria-hidden="true"></span>
+              <div class="tl-item__body">
+                <p class="tl-item__year">79 <span>d.C.</span></p>
+                <h3 class="tl-item__head">La erupción</h3>
+                <p class="tl-item__text">
+                  El Vesubio entra en erupción. La ciudad queda sepultada bajo
+                  ceniza y material volcánico.
+                </p>
+              </div>
+            </li>
+
+            <li class="tl-item" data-tl>
+              <span class="tl-item__dot" aria-hidden="true"></span>
+              <div class="tl-item__body">
+                <p class="tl-item__year">1748</p>
+                <h3 class="tl-item__head">El redescubrimiento</h3>
+                <p class="tl-item__text">
+                  El rey Carlos III ordena las primeras excavaciones oficiales que
+                  permiten redescubrir Pompeya.
+                </p>
+              </div>
+            </li>
+
+            <li class="tl-item" data-tl>
+              <span class="tl-item__dot" aria-hidden="true"></span>
+              <div class="tl-item__body">
+                <p class="tl-item__year">1863</p>
+                <h3 class="tl-item__head">El pasado toma forma</h3>
+                <p class="tl-item__text">
+                  Giuseppe Fiorelli inventa la técnica de inyectar yeso en los huecos.
+                  El pasado toma forma.
+                </p>
+              </div>
+            </li>
+
+            <li class="tl-item" data-tl>
+              <span class="tl-item__dot" aria-hidden="true"></span>
+              <div class="tl-item__body">
+                <p class="tl-item__year">1997</p>
+                <h3 class="tl-item__head">Patrimonio</h3>
+                <p class="tl-item__text">
+                  Pompeya es declarada Patrimonio de la Humanidad por la UNESCO.
+                </p>
+              </div>
+            </li>
+
+            <li class="tl-item tl-item--now" data-tl>
+              <span class="tl-item__dot" aria-hidden="true"></span>
+              <div class="tl-item__body">
+                <p class="tl-item__year">Hoy</p>
+                <h3 class="tl-item__head">Memoria abierta</h3>
+                <p class="tl-item__text">
+                  Las excavaciones y tareas de conservación continúan.
+                  Pompeya sigue siendo una memoria abierta.
+                </p>
+              </div>
+            </li>
+
+          </ol>
+          <div class="timeline__rail" aria-hidden="true"><span class="timeline__rail-fill"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CIERRE ESPECULATIVO ============ -->
+    <section class="closing" id="cierre" data-scene>
+      <figure class="closing__media">
+        <img class="closing__img" data-parallax="0.10" loading="lazy"
+             src="images/la-ciudad-arrasada_3797a83a_1280x852.jpg"
+             alt="Vista aérea actual de las ruinas de Pompeya con el Vesubio dominando el horizonte al atardecer." />
+        <div class="closing__scrim"></div>
+      </figure>
+      <div class="closing__inner">
+        <h2 class="closing__title reveal">El Vesubio sigue activo.</h2>
+        <p class="closing__q reveal">¿Cuándo volverá a despertar?</p>
+        <p class="closing__q reveal">¿Qué hacemos con la memoria que ya dejó?</p>
+      </div>
+    </section>
+
+    <!-- ============ FICHA TÉCNICA (documentación como obra) ============ -->
+    <section class="colophon" id="ficha-tecnica">
+      <div class="colophon__wrap">
+
+        <header class="colophon__top reveal">
+          <p class="colophon__tag">[ DOCUMENTACIÓN · LA FICHA ES PARTE DE LA OBRA ]</p>
+          <h2 class="colophon__title">Ficha técnica</h2>
+          <p class="colophon__lead">
+            En la corriente del <strong>diseño digital</strong>, el registro del proceso no es
+            un anexo: es parte de la pieza. Esta sección documenta las decisiones que sostienen
+            la narrativa.
+          </p>
+        </header>
+
+        <div class="colophon__grid">
+
+          <article class="field reveal">
+            <h3 class="field__q">¿Por qué este tema?</h3>
+            <p class="field__a">
+              Pompeya condensa una tensión universal: la fragilidad de lo cotidiano frente a la
+              naturaleza, y el modo en que una catástrofe se transforma en memoria. Es un hecho
+              global con resonancia local —vivimos sobre fallas, volcanes y riesgos que
+              preferimos ignorar—. El tema habilita una mirada <em>crítica, empática y
+              reflexiva</em>: no narramos sólo una ruina, sino qué hacemos hoy con lo que dejó.
+            </p>
+          </article>
+
+          <article class="field reveal">
+            <h3 class="field__q">Intención informativa y comunicacional</h3>
+            <p class="field__a">
+              Informar el hecho histórico (erupción, sepultamiento, redescubrimiento y
+              conservación) sin perder la carga emotiva. La intención no es enumerar datos,
+              sino <em>hacer sentir el tiempo</em>: el de la ciudad viva, el del silencio bajo
+              tierra y el del presente que excava. El mensaje guía toda la pieza por encima del
+              ornamento —<strong>primacía del concepto</strong>—.
+            </p>
+          </article>
+
+          <article class="field reveal">
+            <h3 class="field__q">Narrativa visual: ritmo, jerarquía e interactividad</h3>
+            <p class="field__a">
+              La estructura es un descenso. El scroll funciona como <em>excavación</em>: bajar es
+              adentrarse en los estratos de ceniza (de ahí el indicador de “profundidad”).
+              El ritmo alterna escenas a pantalla completa con intersticios tipográficos de
+              respiro y tensión. La jerarquía se ordena por escala: las capitales romanas de
+              <em>Cinzel</em> para los hitos monumentales y <em>Montserrat</em> para el relato y las
+              etiquetas técnicas. La interactividad es sobria —parálax sutil, apariciones por
+              desenfoque (como objetos que emergen de la ceniza) y una línea de tiempo que se
+              recorre con el propio gesto del scroll—.
+            </p>
+          </article>
+
+          <article class="field reveal">
+            <h3 class="field__q">Relación entre diseño y contenido</h3>
+            <p class="field__a">
+              La estética refuerza el mensaje sin competir con él. Los textos viven en tarjetas
+              de vidrio esmerilado que garantizan legibilidad sobre las imágenes; el color nace
+              del propio material (ceniza, brasa, lava, ámbar). Las animaciones son lentas y
+              graves, acordes a un relato de duelo y permanencia. Nada se mueve “porque sí”:
+              cada recurso traduce una idea del contenido.
+            </p>
+          </article>
+
+          <article class="field field--wide reveal">
+            <h3 class="field__q">Corriente gráfica: Diseño Digital (1990–)</h3>
+            <p class="field__a">
+              El proyecto adopta la corriente del <strong>diseño digital</strong> en su vertiente
+              conceptual. Se materializa en decisiones concretas:
+            </p>
+            <ul class="field__list">
+              <li><strong>Primacía del concepto:</strong> el mensaje —memoria y advertencia— manda sobre el efectismo.</li>
+              <li><strong>Desmaterialización:</strong> el diseño existe como <em>proceso y sistema</em>; el scroll-excavación y los estratos son instrucción, no sólo imagen.</li>
+              <li><strong>El texto como dispositivo:</strong> palabras-imagen (“1669”, la antítesis “sepultó / conservó”) que piensan en voz alta.</li>
+              <li><strong>Documentación como obra:</strong> esta misma ficha integrada al recorrido.</li>
+              <li><strong>Diseño especulativo y crítico:</strong> el cierre no concluye, interroga el futuro (“¿cuándo volverá a despertar?”).</li>
+            </ul>
+          </article>
+
+          <article class="field field--wide reveal">
+            <h3 class="field__q">Figuras retóricas aplicadas</h3>
+            <ul class="rhet">
+              <li><span class="rhet__name">Metáfora</span><span class="rhet__ex">“La ciudad borrada del mapa” · “memoria abierta”</span></li>
+              <li><span class="rhet__name">Personificación</span><span class="rhet__ex">“el volcán acumulando su furia” · “el Vesubio despertó”</span></li>
+              <li><span class="rhet__name">Antítesis / Paradoja</span><span class="rhet__ex">“La ceniza no solo sepultó. También conservó.”</span></li>
+              <li><span class="rhet__name">Hipérbole</span><span class="rhet__ex">“una violencia imposible de detener”</span></li>
+              <li><span class="rhet__name">Interrogación retórica</span><span class="rhet__ex">“¿Cuándo volverá a despertar?”</span></li>
+              <li><span class="rhet__name">Gradación / Clímax</span><span class="rhet__ex">prosperidad → calma → furia → silencio → presente</span></li>
+            </ul>
+          </article>
+
+          <article class="field field--wide reveal">
+            <h3 class="field__q">Paleta de color</h3>
+            <ul class="swatches">
+              <li class="swatch"><span class="swatch__chip" style="background:#15100E"></span><span class="swatch__name">Negro ceniza</span><span class="swatch__hex">#15100E</span></li>
+              <li class="swatch"><span class="swatch__chip" style="background:#3A2A22"></span><span class="swatch__name">Tierra quemada</span><span class="swatch__hex">#3A2A22</span></li>
+              <li class="swatch"><span class="swatch__chip" style="background:#B23A2E"></span><span class="swatch__name">Rojo Vesubio</span><span class="swatch__hex">#B23A2E</span></li>
+              <li class="swatch"><span class="swatch__chip" style="background:#E4502A"></span><span class="swatch__name">Lava</span><span class="swatch__hex">#E4502A</span></li>
+              <li class="swatch"><span class="swatch__chip" style="background:#E9A23B"></span><span class="swatch__name">Ámbar fundido</span><span class="swatch__hex">#E9A23B</span></li>
+              <li class="swatch"><span class="swatch__chip" style="background:#ECE3D6"></span><span class="swatch__name">Ceniza clara</span><span class="swatch__hex">#ECE3D6</span></li>
+            </ul>
+          </article>
+
+          <article class="field reveal">
+            <h3 class="field__q">Partido tipográfico</h3>
+            <p class="field__a" style="margin-bottom:1.2rem;">Dos familias, dos tiempos.</p>
+            <div class="type-spec">
+              <p class="type-spec__sample" style="font-family:'Cinzel',serif;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;">Cinzel</p>
+              <p class="type-spec__role">Capitales romanas inspiradas en inscripciones lapidarias. Títulos, años e hitos monumentales — la voz del pasado clásico, tallado en piedra.</p>
+            </div>
+            <div class="type-spec">
+              <p class="type-spec__sample" style="font-family:'Montserrat',sans-serif;font-weight:500;">Montserrat</p>
+              <p class="type-spec__role">Sans geométrica contemporánea, de uso extendido en la web (y originada en los carteles del barrio Montserrat de Buenos Aires). Cuerpo de texto, subtítulos y etiquetas en mayúsculas con tracking — la voz digital que lee el pasado desde la pantalla.</p>
+            </div>
+          </article>
+
+          <article class="field reveal">
+            <h3 class="field__q">Justificación estética</h3>
+            <p class="field__a">
+              Dos tipografías = dos tiempos: <em>Cinzel</em>, capitales romanas talladas (lo
+              clásico sepultado), y <em>Montserrat</em>, sans geométrica y contemporánea
+              (la mirada digital que lo examina y lo narra). La paleta no se inventa:
+              se extrae del material del relato —ceniza, brasa y ámbar—, de modo que el color
+              <em>sea</em> el tema. El conjunto busca solemnidad sin frialdad: una pieza que
+              informa, conmueve y, sobre todo, advierte.
+            </p>
+          </article>
+
+        </div>
+
+        <footer class="colophon__foot reveal">
+          <p class="colophon__sign">Pompeya · La ciudad borrada del mapa</p>
+          <p class="colophon__by">
+            Comunicación Visual y Diseño Gráfico — Trabajo práctico de Lucas Rodríguez ·
+            Corriente: Diseño Digital
+          </p>
+        </footer>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/main.js?v=3"></script>
+</body>
+</html>
