@@ -17,7 +17,7 @@
 
   <!-- Tipografías self-hosted (offline): Cinzel (capitales romanas · títulos) + Montserrat (texto · interfaz) -->
   <link rel="stylesheet" href="css/fonts.css" />
-  <link rel="stylesheet" href="css/styles.css?v=11" />
+  <link rel="stylesheet" href="css/styles.css?v=13" />
 </head>
 
 <body>
@@ -64,23 +64,10 @@
               <stop offset="0" stop-color="#0c0706" />
               <stop offset="1" stop-color="#030202" />
             </linearGradient>
-            <linearGradient id="vesuvio-plume" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0" stop-color="#E9A23B" stop-opacity="0.45" />
-              <stop offset="0.4" stop-color="#9a8d83" stop-opacity="0.20" />
-              <stop offset="1" stop-color="#9a8d83" stop-opacity="0" />
-            </linearGradient>
-            <filter id="vesuvio-soft" x="-60%" y="-60%" width="220%" height="220%">
-              <feGaussianBlur stdDeviation="17" />
-            </filter>
             <filter id="vesuvio-rim" x="-30%" y="-80%" width="160%" height="260%">
               <feGaussianBlur stdDeviation="5" />
             </filter>
           </defs>
-          <!-- columna de humo / erupción -->
-          <path d="M690,360 C 744,262 744,180 702,90 C 696,76 684,76 678,90 C 636,180 636,262 690,360 Z"
-                fill="url(#vesuvio-plume)" filter="url(#vesuvio-soft)" />
-          <!-- cráter incandescente -->
-          <ellipse cx="690" cy="360" rx="42" ry="13" fill="#E9A23B" opacity="0.6" filter="url(#vesuvio-rim)" />
           <!-- borde incandescente de la cresta -->
           <path d="M0,640 C 240,615 460,470 650,360 C 678,344 690,362 712,354 C 740,342 760,378 980,452 C 1180,520 1320,585 1440,610"
                 fill="none" stroke="#E4502A" stroke-width="4" opacity="0.75" filter="url(#vesuvio-rim)" />
@@ -194,8 +181,8 @@
       <div class="scene__inner scene__inner--end">
         <article class="antithesis reveal">
           <p class="card__eyebrow card__eyebrow--light">04 — La ceniza</p>
-          <p class="antithesis__line antithesis__line--bury">La ceniza no solo sepultó.</p>
-          <p class="antithesis__line antithesis__line--keep">También conservó.</p>
+          <p class="antithesis__line antithesis__line--bury">La ceniza no solo sepultó,</p>
+          <p class="antithesis__line antithesis__line--keep">También conservó</p>
         </article>
       </div>
     </section>
@@ -412,10 +399,10 @@
             <h3 class="field__q">Paleta de color</h3>
             <ul class="swatches">
               <li class="swatch"><span class="swatch__chip" style="background:#15100E"></span><span class="swatch__name">Negro ceniza</span><span class="swatch__hex">#15100E</span></li>
+              <li class="swatch"><span class="swatch__chip" style="background:#ECE3D6"></span><span class="swatch__name">Ceniza clara</span><span class="swatch__hex">#ECE3D6</span></li>
+              <li class="swatch"><span class="swatch__chip" style="background:#E9A23B"></span><span class="swatch__name">Ámbar fundido</span><span class="swatch__hex">#E9A23B</span></li>
               <li class="swatch"><span class="swatch__chip" style="background:#B23A2E"></span><span class="swatch__name">Rojo Vesubio</span><span class="swatch__hex">#B23A2E</span></li>
               <li class="swatch"><span class="swatch__chip" style="background:#E4502A"></span><span class="swatch__name">Lava</span><span class="swatch__hex">#E4502A</span></li>
-              <li class="swatch"><span class="swatch__chip" style="background:#E9A23B"></span><span class="swatch__name">Ámbar fundido</span><span class="swatch__hex">#E9A23B</span></li>
-              <li class="swatch"><span class="swatch__chip" style="background:#ECE3D6"></span><span class="swatch__name">Ceniza clara</span><span class="swatch__hex">#ECE3D6</span></li>
             </ul>
           </article>
 
