@@ -40,22 +40,26 @@
     if (reduceMotion) return;
     var nodes = document.querySelectorAll("[data-split]");
     nodes.forEach(function (el) {
-      el.classList.remove("reveal"); // usa animación por letra, no de bloque
+      el.classList.remove("reveal");
       var text = el.textContent;
       el.textContent = "";
       var idx = 0;
-      for (var i = 0; i < text.length; i++) {
-        var ch = text[i];
-        if (ch === " ") {
-          el.appendChild(document.createTextNode(" "));
-          continue;
+      var words = text.split(" ");
+      for (var w = 0; w < words.length; w++) {
+        if (w > 0) el.appendChild(document.createTextNode(" "));
+        var word = words[w];
+        // Cada palabra en un contenedor inline-block para que no se parta mid-word
+        var wordWrap = document.createElement("span");
+        wordWrap.style.cssText = "display:inline-block;white-space:nowrap";
+        for (var i = 0; i < word.length; i++) {
+          var span = document.createElement("span");
+          span.className = "ch";
+          span.textContent = word[i];
+          span.style.transitionDelay = Math.min(idx, 42) * 0.028 + "s";
+          wordWrap.appendChild(span);
+          idx++;
         }
-        var span = document.createElement("span");
-        span.className = "ch";
-        span.textContent = ch;
-        span.style.transitionDelay = Math.min(idx, 42) * 0.028 + "s";
-        el.appendChild(span);
-        idx++;
+        el.appendChild(wordWrap);
       }
     });
   }
@@ -105,16 +109,31 @@
     var nav = document.querySelector(".strata");
     if (!nav) return;
     var links = Array.prototype.slice.call(nav.querySelectorAll(".strata__link"));
+    var hintTimer = null;
+
+    function setCurrent(id) {
+      links.forEach(function (l) {
+        var isCur = l.getAttribute("href") === id;
+        l.classList.toggle("is-current", isCur);
+        if (!isCur) l.classList.remove("is-hint-out");
+        else l.classList.remove("is-hint-out"); // reaparece al (re)entrar
+      });
+      // La etiqueta-guía se muestra y se desvanece sola a los 3 s
+      clearTimeout(hintTimer);
+      if (!reduceMotion) {
+        hintTimer = setTimeout(function () {
+          var cur = nav.querySelector(".strata__link.is-current");
+          if (cur) cur.classList.add("is-hint-out");
+        }, 3000);
+      }
+    }
 
     // Estrato actual: la sección que cruza el centro del viewport
     if ("IntersectionObserver" in window) {
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (en) {
           if (!en.isIntersecting) return;
-          var id = "#" + en.target.id;
-          links.forEach(function (l) {
-            l.classList.toggle("is-current", l.getAttribute("href") === id);
-          });
+          setCurrent("#" + en.target.id);
         });
       }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
 

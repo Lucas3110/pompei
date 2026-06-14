@@ -179,6 +179,17 @@ a { color: inherit; text-decoration: none; }
   opacity: 1;
   transform: translateY(-50%) translateX(0);
 }
+/* La etiqueta-guía se desvanece sola a los 3 s (ver initStrata) para no
+   chocar con el contenido; al pasar el mouse vuelve a aparecer */
+.strata__link.is-current.is-hint-out .strata__name {
+  opacity: 0;
+  transform: translateY(-50%) translateX(6px);
+}
+.strata__link.is-current.is-hint-out:hover .strata__name,
+.strata__link.is-current.is-hint-out:focus-visible .strata__name {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
 
 /* ---------- 4. Encabezado ---------- */
 .masthead {
@@ -809,6 +820,7 @@ a { color: inherit; text-decoration: none; }
   position: absolute;
   left: 0;
   top: 0.35rem;
+  z-index: 5;
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -884,16 +896,17 @@ a { color: inherit; text-decoration: none; }
     radial-gradient(120% 80% at 50% 40%, rgba(12,9,8,0.2), rgba(12,9,8,0.82) 80%),
     linear-gradient(180deg, rgba(12,9,8,0.7), rgba(12,9,8,0.35) 50%, rgba(12,9,8,0.92));
 }
-.closing__inner { position: relative; z-index: 2; max-width: min(90vw, 42rem); }
+.closing__inner { position: relative; z-index: 2; max-width: min(94vw, 70rem); }
 .closing__title {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: clamp(1.9rem, 6.2vw, 3.6rem);
+  font-size: clamp(1.6rem, 4.2vw, 2.8rem);
   line-height: 1.12;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--c-bone);
   margin-bottom: 1.8rem;
+  white-space: nowrap;
 }
 .closing__q {
   font-family: var(--font-sans);
