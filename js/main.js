@@ -374,35 +374,36 @@
     if (!root) return;
     var handle = root.querySelector(".excavate__handle");
     if (!handle) return;
-    var MIN = 4, MAX = 96, dig = 30, dragging = false;
+    var MIN = 4, MAX = 96, dig = 33, dragging = false;
 
     function set(v) {
       dig = clamp(v, MIN, MAX);
       root.style.setProperty("--dig", dig + "%");
       handle.setAttribute("aria-valuenow", Math.round(dig));
     }
-    function pctFromX(clientX) {
+    function pctFromY(clientY) {
       var r = root.getBoundingClientRect();
-      return ((clientX - r.left) / r.width) * 100;
+      return ((clientY - r.top) / r.height) * 100;
     }
 
     handle.addEventListener("pointerdown", function (e) {
       dragging = true;
       root.classList.add("is-digging");
       if (handle.setPointerCapture) handle.setPointerCapture(e.pointerId);
-      set(pctFromX(e.clientX));
+      set(pctFromY(e.clientY));
       e.preventDefault();
     });
     handle.addEventListener("pointermove", function (e) {
-      if (dragging) set(pctFromX(e.clientX));
+      if (dragging) set(pctFromY(e.clientY));
     });
     handle.addEventListener("pointerup", function () { dragging = false; });
     handle.addEventListener("pointercancel", function () { dragging = false; });
 
     handle.addEventListener("keydown", function (e) {
       var step = e.shiftKey ? 10 : 4;
-      if (e.key === "ArrowRight" || e.key === "ArrowUp") { set(dig + step); root.classList.add("is-digging"); e.preventDefault(); }
-      else if (e.key === "ArrowLeft" || e.key === "ArrowDown") { set(dig - step); root.classList.add("is-digging"); e.preventDefault(); }
+      // Abajo = excavar más profundo; arriba = volver a cubrir
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") { set(dig + step); root.classList.add("is-digging"); e.preventDefault(); }
+      else if (e.key === "ArrowUp" || e.key === "ArrowLeft") { set(dig - step); root.classList.add("is-digging"); e.preventDefault(); }
       else if (e.key === "Home") { set(MIN); e.preventDefault(); }
       else if (e.key === "End") { set(MAX); e.preventDefault(); }
     });

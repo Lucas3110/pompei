@@ -562,7 +562,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ---------- Excavar el molde (slider de revelado) ---------- */
-.excavate { --dig: 30%; }
+.excavate { --dig: 42%; }
 .excavate__stage {
   position: absolute;
   inset: 0;
@@ -581,7 +581,8 @@ a { color: inherit; text-decoration: none; }
 .excavate__buried {
   position: absolute;
   inset: 0;
-  clip-path: inset(0 0 0 var(--dig));
+  /* La ceniza cubre desde el corte hacia abajo; excavar (arrastrar) lo baja y revela el molde */
+  clip-path: inset(var(--dig) 0 0 0);
   will-change: clip-path;
 }
 .excavate__veil {
@@ -593,13 +594,13 @@ a { color: inherit; text-decoration: none; }
 }
 .excavate__handle {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: var(--dig);
-  width: 48px;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  top: var(--dig);
+  height: 48px;
+  transform: translateY(-50%);
   z-index: 5;
-  cursor: ew-resize;
+  cursor: ns-resize;
   touch-action: none;
   display: grid;
   place-items: center;
@@ -607,12 +608,12 @@ a { color: inherit; text-decoration: none; }
 .excavate__handle::before {
   content: "";
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 2px;
-  transform: translateX(-50%);
-  background: linear-gradient(180deg, transparent, rgba(233, 162, 59, 0.85) 16%, rgba(233, 162, 59, 0.85) 84%, transparent);
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, transparent, rgba(233, 162, 59, 0.85) 16%, rgba(233, 162, 59, 0.85) 84%, transparent);
 }
 .excavate__grip {
   position: relative;
@@ -628,7 +629,7 @@ a { color: inherit; text-decoration: none; }
   place-items: center;
 }
 .excavate__grip::before {
-  content: "⇆";
+  content: "⇅";
   color: var(--c-gold);
   font-size: 1.25rem;
   line-height: 1;
