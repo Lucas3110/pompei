@@ -375,7 +375,8 @@
     var handle = root.querySelector(".excavate__handle");
     if (!handle) return;
     var grip = root.querySelector(".excavate__grip") || handle; // sólo el tirador captura el gesto
-    var MIN = 4, MAX = 96, dig = 33, dragging = false;
+    var bury = root.querySelector(".antithesis__line--bury");    // ancla: "...sepultó,"
+    var MIN = 4, MAX = 96, dig = 33, dragging = false, userDug = false;
 
     function set(v) {
       dig = clamp(v, MIN, MAX);
@@ -386,9 +387,25 @@
       var r = root.getBoundingClientRect();
       return ((clientY - r.top) / r.height) * 100;
     }
+    /* Ancla el corte al borde inferior real de "sepultó,". Se mide con
+       getBoundingClientRect SÓLO en reposo (texto ya revelado): mientras el
+       reveal corre, su transform falsearía la posición y el corte caería más abajo. */
+    var GAP = -36;        // px de respiro debajo de "sepultó," (subir para alejar, bajar para acercar)
+    var anchored = false;
+    function reanchor() {
+      if (userDug || anchored || !bury) return;
+      var article = bury.closest(".reveal");
+      if (article && !article.classList.contains("is-visible")) return; // esperar reposo
+      var rRect = root.getBoundingClientRect();
+      if (!rRect.height) return;
+      var bRect = bury.getBoundingClientRect();
+      set(((bRect.bottom - rRect.top + GAP) / rRect.height) * 100);
+      anchored = true;
+    }
 
     grip.addEventListener("pointerdown", function (e) {
       dragging = true;
+      userDug = true;
       root.classList.add("is-digging");
       if (grip.setPointerCapture) grip.setPointerCapture(e.pointerId);
       set(pctFromY(e.clientY));
@@ -403,13 +420,18 @@
     handle.addEventListener("keydown", function (e) {
       var step = e.shiftKey ? 10 : 4;
       // Abajo = excavar más profundo; arriba = volver a cubrir
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") { set(dig + step); root.classList.add("is-digging"); e.preventDefault(); }
-      else if (e.key === "ArrowUp" || e.key === "ArrowLeft") { set(dig - step); root.classList.add("is-digging"); e.preventDefault(); }
-      else if (e.key === "Home") { set(MIN); e.preventDefault(); }
-      else if (e.key === "End") { set(MAX); e.preventDefault(); }
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") { userDug = true; set(dig + step); root.classList.add("is-digging"); e.preventDefault(); }
+      else if (e.key === "ArrowUp" || e.key === "ArrowLeft") { userDug = true; set(dig - step); root.classList.add("is-digging"); e.preventDefault(); }
+      else if (e.key === "Home") { userDug = true; set(MIN); e.preventDefault(); }
+      else if (e.key === "End") { userDug = true; set(MAX); e.preventDefault(); }
     });
 
-    set(dig);
+    // Se ancla al revelarse la sección (en reposo) y se recalcula ante cambios de layout
+    scrollCbs.push(reanchor);
+    resizeCbs.push(function () { anchored = false; reanchor(); });
+    window.addEventListener("load", reanchor);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(reanchor);
+    reanchor();
   }
 
   function init() {

@@ -584,7 +584,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ---------- Excavar el molde (slider de revelado) ---------- */
-.excavate { --dig: 33%; }
+.excavate { --dig: 44%; }
 .excavate__stage {
   position: absolute;
   inset: 0;
