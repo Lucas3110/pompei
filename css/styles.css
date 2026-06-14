@@ -511,7 +511,8 @@ a { color: inherit; text-decoration: none; }
   max-width: var(--maxw);
   margin: 0 auto;
   padding: var(--pad);
-  display: flex;
+  margin-top: 2.5rem;
+ 
 }
 .scene__inner--end { align-items: flex-end; min-height: 100svh; padding-bottom: clamp(3rem, 12vh, 9rem); }
 
@@ -637,7 +638,7 @@ a { color: inherit; text-decoration: none; }
 .excavate__hint {
   position: absolute;
   left: 50%;
-  top: clamp(4.5rem, 15vh, 8rem);
+  top: 3rem;
   transform: translateX(-50%);
   z-index: 5;
   font-family: var(--font-mono);
