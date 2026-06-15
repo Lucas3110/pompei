@@ -56,16 +56,11 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  /* Enfoque automático sutil: al detener el scroll cerca de una sección,
-     el navegador la "imanta" hacia el borde superior (slide-to-slide).
-     'proximity' es gentil: no atrapa dentro de la línea de tiempo larga
-     ni en la ficha técnica (que no llevan punto de anclaje). */
-  scroll-snap-type: y proximity;
 }
-
-/* Cada escena narrativa es un punto de enganche. La ficha técnica
-   (.colophon, sin data-scene) queda libre para leerse de corrido. */
-[data-scene] { scroll-snap-align: start; }
+/* El "enfoque automático" entre secciones lo maneja el ascensor JS
+   (initElevator en main.js): un gesto de scroll lleva con una animación
+   pronunciada a la sección vecina, dejando la línea de tiempo y la ficha
+   técnica como zonas de scroll libre. */
 
 body {
   margin: 0;
@@ -430,55 +425,9 @@ body.ash-hidden .ash { opacity: 0; }
   text-shadow: 0 12px 60px rgba(0, 0, 0, 0.55);
 }
 
-/* Lava bajo la piedra: el calor latente asoma bajo el título (interactivo) */
 .hero__title-wrap {
   position: relative;
   display: inline-block;
-  --lava-x: 50%;
-  --lava-y: 50%;
-  cursor: default;
-  user-select: none;
-  -webkit-user-select: none;
-}
-.hero__title-wrap.is-active .hero__title-lava { opacity: 0.95; }
-
-/* Sin mouse (touch): un destello de lava recorre el título solo */
-.hero__title-wrap.is-auto .hero__title-lava {
-  opacity: 0.85;
-  -webkit-mask-image: radial-gradient(circle 120px at 0% 50%, #000 0%, #000 50%, transparent 100%);
-  mask-image: radial-gradient(circle 120px at 0% 50%, #000 0%, #000 50%, transparent 100%);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  animation: lavaSweep 5s ease-in-out infinite;
-}
-@keyframes lavaSweep {
-  0%   { -webkit-mask-position: -25% 0; mask-position: -25% 0; }
-  100% { -webkit-mask-position: 125% 0; mask-position: 125% 0; }
-}
-.hero__title-lava {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  pointer-events: none;
-  /* ⚠ mantener métricas en sync con .hero__title */
-  font-family: var(--font-serif);
-  font-weight: 900;
-  font-size: clamp(2.5rem, 12.5vw, 11rem);
-  line-height: 1;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-align: center;
-  white-space: nowrap;
-  background: linear-gradient(180deg, #f7c451 0%, #e9a23b 24%, #e4502a 56%, #b23a2e 82%, #6f1d14 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 16px rgba(228, 80, 42, 0.5));
-  opacity: 0;
-  transition: opacity 0.45s ease;
-  -webkit-mask-image: radial-gradient(circle 160px at var(--lava-x) var(--lava-y), #000 0%, #000 55%, transparent 100%);
-  mask-image: radial-gradient(circle 160px at var(--lava-x) var(--lava-y), #000 0%, #000 55%, transparent 100%);
 }
 .hero__subtitle {
   font-family: var(--font-sans);
@@ -712,7 +661,7 @@ main > section + .timeline { margin-top: 0; }
 .excavate__hint {
   position: absolute;
   left: 50%;
-  top: 3rem;
+  top: 4rem;
   transform: translateX(-50%);
   z-index: 5;
   font-family: var(--font-mono);
@@ -1261,8 +1210,7 @@ main > section + .timeline { margin-top: 0; }
     --fs-lg:  1.25rem;  --lh-lg:  1.375rem;  /* 20 / 22 */
   }
   /* El título "POMPEYA" usa nowrap; lo achicamos para que entre sin desbordar */
-  .hero__title,
-  .hero__title-lava { font-size: clamp(1.9rem, 10.5vw, 2.6rem); }
+  .hero__title { font-size: clamp(1.9rem, 10.5vw, 2.6rem); }
   .hero__eyebrow { letter-spacing: 0.16em; }
   .masthead__brand { letter-spacing: 0.05em; }
   /* El meta "79 d.C. — Hoy" es decorativo y redundante con el eyebrow; se oculta en mobile */
@@ -1275,8 +1223,7 @@ main > section + .timeline { margin-top: 0; }
    14. Accesibilidad — movimiento reducido
    ===================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; scroll-snap-type: none; }
-  [data-scene] { scroll-snap-align: none; }
+  html { scroll-behavior: auto; }
   *,
   *::before,
   *::after {

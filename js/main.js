@@ -329,43 +329,99 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Init                                                                */
+  /* 8. "Ascensor" entre secciones — un gesto te lleva a la siguiente    */
+  /*    escena con una animación pronunciada y acompañada.               */
+  /*    La línea de tiempo y la ficha técnica son zonas de scroll LIBRE: */
+  /*    el ascensor sólo las toma en sus bordes para entrar/salir.       */
   /* ------------------------------------------------------------------ */
-  /* ------------------------------------------------------------------ */
-  /* 8. Lava bajo el título — el calor asoma bajo la piedra              */
-  /* ------------------------------------------------------------------ */
-  function initLavaTitle() {
-    var wrap = document.querySelector(".hero__title-wrap");
-    if (!wrap || !wrap.querySelector(".hero__title-lava")) return;
+  function initElevator() {
+    if (reduceMotion) return;
+    var main = document.getElementById("contenido");
+    if (!main) return;
+    var sections = Array.prototype.slice.call(main.children).filter(function (el) {
+      return el.tagName === "SECTION";
+    });
+    if (sections.length < 2) return;
 
-    // Foco que sigue al mouse / lápiz (sin depender de media queries)
-    var rect = wrap.getBoundingClientRect();
-    function cacheRect() { rect = wrap.getBoundingClientRect(); }
-    scrollCbs.push(cacheRect);
-    resizeCbs.push(cacheRect);
+    // Secciones que se leen con scroll nativo (no son "pisos" del ascensor).
+    var freeIds = { "linea-de-tiempo": 1, "ficha-tecnica": 1 };
+    var EDGE = 6;          // tolerancia (px) para detectar borde de una zona libre
+    var COOLDOWN = 180;    // ms de bloqueo tras cada viaje (evita el "spam" del trackpad)
 
-    var active = false, pad = 150;
-    window.addEventListener("pointermove", function (e) {
-      if (e.pointerType === "touch") return;
-      var near = e.clientX > rect.left - pad && e.clientX < rect.right + pad &&
-                 e.clientY > rect.top - pad && e.clientY < rect.bottom + pad;
-      if (near) {
-        wrap.style.setProperty("--lava-x", (e.clientX - rect.left).toFixed(0) + "px");
-        wrap.style.setProperty("--lava-y", (e.clientY - rect.top).toFixed(0) + "px");
-        if (!active) { wrap.classList.add("is-active"); active = true; }
-      } else if (active) {
-        wrap.classList.remove("is-active");
-        active = false;
+    var animId = null, animating = false, lockUntil = 0;
+
+    function isFree(sec) { return !!freeIds[sec.id]; }
+    function curIndex() {
+      var probe = window.scrollY + window.innerHeight * 0.5;
+      var idx = 0;
+      for (var i = 0; i < sections.length; i++) {
+        if (sections[i].offsetTop <= probe) idx = i; else break;
       }
-    }, { passive: true });
-
-    // Pantallas táctiles: destello de lava automático
-    if (!reduceMotion) {
-      window.addEventListener("touchstart", function onTouch() {
-        wrap.classList.add("is-auto");
-        window.removeEventListener("touchstart", onTouch);
-      }, { passive: true });
+      return idx;
     }
+    // Y de destino: entrando a una zona libre hacia ARRIBA se aterriza en su
+    // parte de abajo (para recorrerla hacia atrás); en cualquier otro caso, arriba.
+    function destY(sec, dir) {
+      if (isFree(sec) && dir < 0) {
+        return Math.max(0, sec.offsetTop + sec.offsetHeight - window.innerHeight);
+      }
+      return sec.offsetTop;
+    }
+
+    function animateTo(y) {
+      cancelAnimationFrame(animId);
+      var startY = window.scrollY;
+      var dist = Math.round(y) - startY;
+      if (Math.abs(dist) < 2) return;
+      // Duración proporcional a la distancia, acotada: viaje de "ascensor".
+      var dur = clamp(Math.abs(dist) * 0.55, 480, 900);
+      var prevBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = "auto"; // controlamos el easing nosotros
+      var t0 = null;
+      animating = true;
+      function step(ts) {
+        if (t0 === null) t0 = ts;
+        var p = clamp((ts - t0) / dur, 0, 1);
+        // easeInOutCubic: arranca y frena suave (sensación de cabina)
+        var e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+        window.scrollTo(0, startY + dist * e);
+        if (p < 1) { animId = requestAnimationFrame(step); }
+        else {
+          animating = false;
+          lockUntil = Date.now() + COOLDOWN;
+          document.documentElement.style.scrollBehavior = prevBehavior;
+        }
+      }
+      animId = requestAnimationFrame(step);
+    }
+
+    function onWheel(e) {
+      if (e.ctrlKey) return;                 // zoom del navegador: no interferir
+      if (Math.abs(e.deltaY) < 2) return;
+      if (animating || Date.now() < lockUntil) { e.preventDefault(); return; }
+
+      var idx = curIndex();
+      var sec = sections[idx];
+      var dir = e.deltaY > 0 ? 1 : -1;
+
+      if (isFree(sec)) {
+        // Dentro de timeline / ficha técnica: scroll nativo, salvo en los bordes.
+        var atTop = window.scrollY <= sec.offsetTop + EDGE;
+        var atBottom = window.scrollY + window.innerHeight >= sec.offsetTop + sec.offsetHeight - EDGE;
+        if (dir > 0 && atBottom && sections[idx + 1]) {
+          e.preventDefault(); animateTo(destY(sections[idx + 1], dir));
+        } else if (dir < 0 && atTop && sections[idx - 1]) {
+          e.preventDefault(); animateTo(destY(sections[idx - 1], dir));
+        }
+        return; // si no es borde, dejamos el scroll nativo (mueve la línea de tiempo)
+      }
+
+      // Piso normal de pantalla completa: un gesto = una sección.
+      var target = sections[idx + dir];
+      if (target) { e.preventDefault(); animateTo(destY(target, dir)); }
+    }
+
+    window.addEventListener("wheel", onWheel, { passive: false });
   }
 
   /* ------------------------------------------------------------------ */
@@ -468,7 +524,7 @@
 
   function init() {
     var mods = [splitText, initReveal, initIndicators, initParallax, initTimeline,
-                initCounters, initAsh, initLavaTitle, initStrata, initExcavate,
+                initCounters, initAsh, initElevator, initStrata, initExcavate,
                 initAshScenes];
     for (var i = 0; i < mods.length; i++) {
       try { mods[i](); } catch (err) { if (window.console) console.error("[init]", err); }
