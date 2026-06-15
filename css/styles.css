@@ -1399,7 +1399,7 @@ main > section + .timeline { margin-top: 0; }
   .volume-control__range { width: 72px; }
   /* La pista de excavación se separa del texto principal en mobile. */
   .excavate__hint {
-    top: 1rem;
+    top: 50%;
     width: max-content;
     max-width: calc(100% - 2.5rem);
     text-align: center;
