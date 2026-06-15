@@ -182,6 +182,7 @@
     if (!section) return;
     var track = section.querySelector(".timeline__track");
     var railFill = section.querySelector(".timeline__rail-fill");
+    var cue = section.querySelector(".timeline__cue");
     var mq = window.matchMedia("(min-width: 880px)");
     var enabled = false;
     var distance = 0;
@@ -202,6 +203,8 @@
       var progress = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
       track.style.transform = "translate3d(" + -(progress * distance).toFixed(1) + "px,0,0)";
       if (railFill) railFill.style.width = (progress * 100).toFixed(1) + "%";
+      // La flecha-pista desaparece apenas se empieza a desplazar la cronología
+      if (cue) cue.classList.toggle("is-scrolled", progress > 0.02);
     }
 
     function refresh() {

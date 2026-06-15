@@ -17,7 +17,7 @@
 
   <!-- Tipografías self-hosted (offline): Cinzel (capitales romanas · títulos) + Montserrat (texto · interfaz) -->
   <link rel="stylesheet" href="css/fonts.css" />
-  <link rel="stylesheet" href="css/styles.css?v=30" />
+  <link rel="stylesheet" href="css/styles.css?v=31" />
 </head>
 
 <body>
@@ -291,6 +291,18 @@
           </ol>
           <div class="timeline__rail" aria-hidden="true"><span class="timeline__rail-fill"></span></div>
         </div>
+
+        <!-- Pista visual: indica que la cronología se recorre hacia la derecha.
+             Se desvanece sola apenas el usuario empieza a desplazarla (initTimeline). -->
+        <div class="timeline__cue" aria-hidden="true">
+          <span class="timeline__cue-text"></span>
+          <span class="timeline__cue-arrow">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" focusable="false">
+              <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+        </div>
       </div>
     </section>
 
@@ -320,11 +332,10 @@
         <div class="colophon__grid">
 
           <article class="field reveal">
-            <h3 class="field__q">¿Por qué este tema?</h3>
+            <h3 class="field__q">¿Por qué elegí este tema?</h3>
             <p class="field__a">
-              Elegí este tema porque siempre me interesó, la historia de la ciudad, la gente y su cultura.
-              El fenómeno de que haya quedado la ciudad intacta a diferencias de muchas otras es
-              algo único.
+              Elegí este tema porque siempre me interesó la historia de la ciudad, la gente y su cultura.
+              Además que la ciudad haya quedado intacta a diferencia de muchas otras es algo único.
             </p>
           </article>
 
@@ -414,6 +425,6 @@
 
   </main>
 
-  <script src="js/main.js?v=25"></script>
+  <script src="js/main.js?v=26"></script>
 </body>
 </html>
