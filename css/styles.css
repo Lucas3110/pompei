@@ -313,10 +313,13 @@ a { color: inherit; text-decoration: none; }
   inset: var(--frame);
   border-radius: var(--radius);
 }
-/* Cierre: borde a borde, esquinas redondeadas por clip-path (más confiable que overflow+border-radius con parallax) */
+/* Cierre: mismo marco + esquinas redondeadas que las escenas (clip-path es más
+   confiable que overflow+border-radius con el parallax). El fondo del propio
+   marco usa el color de página para que nunca se vea un rectángulo negro. */
 .closing__media {
-  inset: 0;
+  inset: var(--frame);
   clip-path: inset(0 round var(--radius));
+  background: var(--c-bg);
 }
 .hero__img,
 .scene__img,
@@ -533,11 +536,14 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: var(--maxw);
+  /* Sin tope de ancho centrado: las tarjetas se anclan al borde de la imagen
+     según el padding (relativo al viewport), por lo que quedan en la misma
+     posición proporcional en notebook, 2K o ultrawide. El ancho legible lo
+     limita la propia tarjeta (.card { max-width }). */
+  max-width: none;
   margin: 0 auto;
   padding: var(--pad);
   margin-top: 2.5rem;
- 
 }
 .scene__inner--end { align-items: flex-end; min-height: 100svh; padding-bottom: clamp(3rem, 12vh, 9rem); }
 
