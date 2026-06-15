@@ -313,6 +313,17 @@ a { color: inherit; text-decoration: none; }
   inset: var(--frame);
   border-radius: var(--radius);
 }
+/* Viñeta interior: oscurece los bordes con una sombra sutil para integrar
+   imágenes muy luminosas/planas con el fondo de ceniza (ej. el atrio del legado). */
+.scene__media--vignette::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow: inset 0 0 clamp(50px, 9vw, 130px) clamp(12px, 2.5vw, 40px) rgba(12, 9, 8, 0.55);
+}
 /* Cierre: mismo marco + esquinas redondeadas que las escenas (clip-path es más
    confiable que overflow+border-radius con el parallax). El fondo del propio
    marco usa el color de página para que nunca se vea un rectángulo negro. */
