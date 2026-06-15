@@ -437,13 +437,16 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* 10. Silenciar la ceniza sobre escenas ilustradas                    */
-  /* Ciudad viva, calma, furia y legado: la ceniza compite con la imagen */
+  /* 10. Silenciar la ceniza sobre ciertas secciones                     */
+  /* Ciudad viva, calma, furia, legado, cronología, el presente y la     */
+  /* ficha técnica: la ceniza compite con la imagen o el contenido.      */
+  /* (Se mantiene en el intersticial "1669" y en el molde de ceniza.)    */
   /* ------------------------------------------------------------------ */
   function initAshScenes() {
     var ash = document.querySelector(".ash");
     if (!ash || !("IntersectionObserver" in window)) return;
-    var ids = ["prosperidad", "temblores", "erupcion", "legado"];
+    var ids = ["prosperidad", "temblores", "erupcion", "legado",
+               "linea-de-tiempo", "cierre", "ficha-tecnica"];
     var secs = ids
       .map(function (id) { return document.getElementById(id); })
       .filter(Boolean);
