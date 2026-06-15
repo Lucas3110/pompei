@@ -1397,6 +1397,13 @@ main > section + .timeline { margin-top: 0; }
   .volume-control:hover .volume-control__panel,
   .volume-control:focus-within .volume-control__panel { width: 118px; }
   .volume-control__range { width: 72px; }
+  /* La pista de excavación se separa del texto principal en mobile. */
+  .excavate__hint {
+    top: 1rem;
+    width: max-content;
+    max-width: calc(100% - 2.5rem);
+    text-align: center;
+  }
   /* El meta "79 d.C. — Hoy" es decorativo y redundante con el eyebrow; se oculta en mobile */
   .masthead__meta { display: none; }
   /* En mobile el cierre puede envolver (el nowrap es sólo para desktop) */
