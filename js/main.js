@@ -270,8 +270,10 @@
     function rand(a, b) { return a + Math.random() * (b - a); }
 
     function build() {
-      w = canvas.clientWidth = window.innerWidth;
-      h = canvas.clientHeight = window.innerHeight;
+      // clientWidth/clientHeight son de solo lectura: el canvas ya ocupa
+      // todo el viewport por CSS (.ash). Sólo leemos las dimensiones.
+      w = window.innerWidth;
+      h = window.innerHeight;
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -434,9 +436,37 @@
     reanchor();
   }
 
+  /* ------------------------------------------------------------------ */
+  /* 10. Silenciar la ceniza sobre escenas ilustradas                    */
+  /* Ciudad viva, calma, furia y legado: la ceniza compite con la imagen */
+  /* ------------------------------------------------------------------ */
+  function initAshScenes() {
+    var ash = document.querySelector(".ash");
+    if (!ash || !("IntersectionObserver" in window)) return;
+    var ids = ["prosperidad", "temblores", "erupcion", "legado"];
+    var secs = ids
+      .map(function (id) { return document.getElementById(id); })
+      .filter(Boolean);
+    if (!secs.length) return;
+
+    // Estado por sección (robusto ante eventos agrupados o salteados):
+    // se recalcula desde la verdad de cada una, sin contadores acumulativos.
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        visible[en.target.id] = en.isIntersecting;
+      });
+      var any = secs.some(function (s) { return visible[s.id]; });
+      document.body.classList.toggle("ash-hidden", any);
+    }, { rootMargin: "-35% 0px -35% 0px", threshold: 0 });
+
+    secs.forEach(function (s) { io.observe(s); });
+  }
+
   function init() {
     var mods = [splitText, initReveal, initIndicators, initParallax, initTimeline,
-                initCounters, initAsh, initLavaTitle, initStrata, initExcavate];
+                initCounters, initAsh, initLavaTitle, initStrata, initExcavate,
+                initAshScenes];
     for (var i = 0; i < mods.length; i++) {
       try { mods[i](); } catch (err) { if (window.console) console.error("[init]", err); }
     }

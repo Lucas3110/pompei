@@ -56,7 +56,16 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  /* Enfoque automático sutil: al detener el scroll cerca de una sección,
+     el navegador la "imanta" hacia el borde superior (slide-to-slide).
+     'proximity' es gentil: no atrapa dentro de la línea de tiempo larga
+     ni en la ficha técnica (que no llevan punto de anclaje). */
+  scroll-snap-type: y proximity;
 }
+
+/* Cada escena narrativa es un punto de enganche. La ficha técnica
+   (.colophon, sin data-scene) queda libre para leerse de corrido. */
+[data-scene] { scroll-snap-align: start; }
 
 body {
   margin: 0;
@@ -108,7 +117,11 @@ a { color: inherit; text-decoration: none; }
   z-index: 5;
   pointer-events: none;
   opacity: 0.55;
+  transition: opacity 0.8s var(--ease);
 }
+/* La ceniza se oculta sobre ciertas escenas (ciudad viva, calma, furia, legado),
+   donde compite con la ilustración. Lo gestiona initAshScenes en main.js. */
+body.ash-hidden .ash { opacity: 0; }
 
 .scroll-progress {
   position: fixed;
@@ -1164,6 +1177,12 @@ main > section + .timeline { margin-top: 0; }
   .timeline__viewport {
     flex: 0 0 auto;
     overflow: hidden;
+    /* Las tarjetas que entran/salen se difuminan en ambos bordes en lugar de
+       cortarse de golpe. El ancho del fundido = var(--pad), así la primera y
+       la última tarjeta (en reposo) quedan dentro del margen y se ven enteras,
+       mientras el resto entra y sale de forma prolija. */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--pad), #000 calc(100% - var(--pad)), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 var(--pad), #000 calc(100% - var(--pad)), transparent 100%);
   }
   .timeline__track {
     flex-direction: row;
@@ -1256,7 +1275,8 @@ main > section + .timeline { margin-top: 0; }
    14. Accesibilidad — movimiento reducido
    ===================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html { scroll-behavior: auto; scroll-snap-type: none; }
+  [data-scene] { scroll-snap-align: none; }
   *,
   *::before,
   *::after {
