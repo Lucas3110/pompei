@@ -231,6 +231,12 @@ body.ash-hidden .ash { opacity: 0; }
 .masthead.is-scrolled {
   background: linear-gradient(180deg, rgba(12, 9, 8, 0.85), rgba(12, 9, 8, 0));
 }
+.masthead__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  pointer-events: auto;
+}
 .masthead__brand {
   pointer-events: auto;
   display: inline-flex;
@@ -250,6 +256,113 @@ body.ash-hidden .ash { opacity: 0; }
   background:
     linear-gradient(135deg, var(--c-gold) 0 50%, var(--c-ember) 50% 100%);
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+/* Volumen ambiental: indicador compacto que revela el ajuste al interactuar. */
+.volume-control {
+  --volume: 60%;
+  display: inline-flex;
+  align-items: center;
+  color: var(--c-stone);
+  pointer-events: auto;
+}
+.volume-control__toggle {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: currentColor;
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.35s var(--ease), border-color 0.35s var(--ease), background 0.35s var(--ease);
+}
+.volume-control__toggle:hover,
+.volume-control__toggle:focus-visible,
+.volume-control:focus-within .volume-control__toggle {
+  color: var(--c-gold);
+  border-color: rgba(233, 162, 59, 0.25);
+  background: rgba(20, 14, 12, 0.42);
+}
+.volume-control__wave,
+.volume-control__mute-mark { transition: opacity 0.3s var(--ease); }
+.volume-control__mute-mark { opacity: 0; }
+.volume-control.is-muted .volume-control__wave { opacity: 0; }
+.volume-control.is-muted .volume-control__mute-mark { opacity: 1; }
+.volume-control__panel {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateX(-5px);
+  transition: width 0.45s var(--ease), opacity 0.25s ease, transform 0.45s var(--ease);
+}
+.volume-control:hover .volume-control__panel,
+.volume-control:focus-within .volume-control__panel {
+  width: 136px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+.volume-control.is-collapsed .volume-control__panel {
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-5px);
+}
+.volume-control.is-collapsed .volume-control__toggle { color: var(--c-stone); }
+.volume-control__range {
+  width: 88px;
+  height: 14px;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+.volume-control__range::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--c-gold) var(--volume), rgba(236, 227, 214, 0.2) var(--volume));
+}
+.volume-control__range::-moz-range-track {
+  height: 2px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--c-gold) var(--volume), rgba(236, 227, 214, 0.2) var(--volume));
+}
+.volume-control__range::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  margin-top: -4px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--c-gold);
+  border-radius: 50%;
+  background: var(--c-bg-2);
+  box-shadow: 0 0 0 3px rgba(233, 162, 59, 0.08);
+}
+.volume-control__range::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--c-gold);
+  border-radius: 50%;
+  background: var(--c-bg-2);
+  box-shadow: 0 0 0 3px rgba(233, 162, 59, 0.08);
+}
+.volume-control__value {
+  width: 2.6rem;
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  line-height: var(--lh-2xs);
+  letter-spacing: 0.04em;
+  color: var(--c-stone);
 }
 .masthead__meta {
   font-family: var(--font-mono);
@@ -904,9 +1017,8 @@ main > section + .timeline { margin-top: 0; }
 
 .timeline__rail { display: none; }
 
-/* Pista visual de scroll horizontal — sólo desktop (mobile es vertical).
-   Indica que la cronología se recorre hacia la derecha y se desvanece
-   apenas el usuario la empieza a mover (clase .is-scrolled vía JS). */
+/* Botón sutil de avance horizontal — sólo desktop (mobile es vertical).
+   Permanece disponible hasta alcanzar el final de la cronología. */
 .timeline__cue {
   display: none;
   position: absolute;
@@ -917,13 +1029,20 @@ main > section + .timeline { margin-top: 0; }
   flex-direction: column;
   align-items: center;
   gap: 0.55rem;
-  pointer-events: none;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
   transition: opacity 0.5s var(--ease), visibility 0.5s var(--ease);
 }
 @media (min-width: 880px) {
   .timeline__cue { display: flex; }
 }
-.timeline__cue.is-scrolled { opacity: 0; visibility: hidden; }
+.timeline__cue.is-finished { opacity: 0; visibility: hidden; pointer-events: none; }
 .timeline__cue-text {
   font-family: var(--font-mono);
   font-size: var(--fs-2xs);
@@ -943,12 +1062,23 @@ main > section + .timeline { margin-top: 0; }
   background: rgba(20, 14, 12, 0.45);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  animation: cueNudge 1.9s ease-in-out infinite;
+  animation: cueNudge 2.8s var(--ease) infinite;
+  transition: border-color 0.35s var(--ease), background 0.35s var(--ease), opacity 0.35s var(--ease);
 }
-/* Latido suave + empujoncito a la derecha */
+.timeline__cue:hover .timeline__cue-arrow,
+.timeline__cue:focus-visible .timeline__cue-arrow {
+  border-color: var(--c-gold);
+  background: rgba(233, 162, 59, 0.08);
+}
+.timeline__cue.is-advancing .timeline__cue-arrow {
+  animation: none;
+  opacity: 0.7;
+  transform: translateX(3px);
+}
+/* Pulso lento y contenido: sugiere dirección sin imponerse. */
 @keyframes cueNudge {
-  0%, 100% { transform: translateX(0); opacity: 0.55; box-shadow: 0 0 0 0 rgba(233, 162, 59, 0.25); }
-  50%      { transform: translateX(7px); opacity: 1; box-shadow: 0 0 0 7px rgba(233, 162, 59, 0); }
+  0%, 100% { transform: translateX(0); opacity: 0.62; box-shadow: 0 0 0 0 rgba(233, 162, 59, 0.12); }
+  50%      { transform: translateX(3px); opacity: 0.95; box-shadow: 0 0 0 4px rgba(233, 162, 59, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .timeline__cue-arrow { animation: none; }
@@ -1263,6 +1393,10 @@ main > section + .timeline { margin-top: 0; }
   .hero__title { font-size: clamp(1.9rem, 10.5vw, 2.6rem); }
   .hero__eyebrow { letter-spacing: 0.16em; }
   .masthead__brand { letter-spacing: 0.05em; }
+  .masthead__identity { gap: 0.35rem; }
+  .volume-control:hover .volume-control__panel,
+  .volume-control:focus-within .volume-control__panel { width: 118px; }
+  .volume-control__range { width: 72px; }
   /* El meta "79 d.C. — Hoy" es decorativo y redundante con el eyebrow; se oculta en mobile */
   .masthead__meta { display: none; }
   /* En mobile el cierre puede envolver (el nowrap es sólo para desktop) */
@@ -1290,6 +1424,7 @@ main > section + .timeline { margin-top: 0; }
   .timeline__track::before { top: 0; bottom: 0; left: calc(var(--pad) + 7px); right: auto; width: 2px; height: auto; transform: none; }
   .tl-item { width: auto; padding-left: 2.6rem; padding-top: 0; }
   .tl-item__dot { top: 0.35rem; }
+  .timeline__cue { display: none !important; }
   .timeline { padding: clamp(4rem,12vh,8rem) 0; }
   .timeline__sticky { display: block; }
 }

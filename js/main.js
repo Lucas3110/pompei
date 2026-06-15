@@ -186,6 +186,7 @@
     var mq = window.matchMedia("(min-width: 880px)");
     var enabled = false;
     var distance = 0;
+    var advanceRaf = null;
 
     function measure() {
       if (!enabled) {
@@ -203,8 +204,51 @@
       var progress = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
       track.style.transform = "translate3d(" + -(progress * distance).toFixed(1) + "px,0,0)";
       if (railFill) railFill.style.width = (progress * 100).toFixed(1) + "%";
-      // La flecha-pista desaparece apenas se empieza a desplazar la cronología
-      if (cue) cue.classList.toggle("is-scrolled", progress > 0.02);
+      if (cue) {
+        var finished = progress > 0.98;
+        cue.classList.toggle("is-finished", finished);
+        cue.disabled = finished;
+      }
+    }
+
+    function advance() {
+      if (!enabled || distance <= 0 || (cue && cue.classList.contains("is-advancing"))) return;
+      cancelAnimationFrame(advanceRaf);
+      var targetY = section.offsetTop + distance;
+      // Si el botón ya está visible antes del inicio técnico del sticky,
+      // saltamos ese tramo invisible para que la cronología responda al instante.
+      var startY = Math.max(window.scrollY, section.offsetTop);
+      if (startY !== window.scrollY) window.scrollTo(0, startY);
+      var delta = targetY - startY;
+      if (Math.abs(delta) < 2) return;
+
+      var previousBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = "auto";
+      // Primer impulso en el mismo evento: elimina la sensación de clic retenido.
+      var responseY = Math.min(targetY, startY + Math.max(18, delta * 0.018));
+      window.scrollTo(0, responseY);
+      startY = responseY;
+      delta = targetY - startY;
+
+      var duration = clamp(Math.abs(delta) * 0.55, 950, 1350);
+      var startedAt = null;
+      if (cue) cue.classList.add("is-advancing");
+
+      function step(ts) {
+        if (startedAt === null) startedAt = ts;
+        var progress = clamp((ts - startedAt) / duration, 0, 1);
+        // Responde de inmediato al clic y frena con suavidad al llegar.
+        var eased = 1 - Math.pow(1 - progress, 3);
+        window.scrollTo(0, startY + delta * eased);
+        if (progress < 1) {
+          advanceRaf = requestAnimationFrame(step);
+        } else {
+          if (cue) cue.classList.remove("is-advancing");
+          document.documentElement.style.scrollBehavior = previousBehavior;
+          update();
+        }
+      }
+      advanceRaf = requestAnimationFrame(step);
     }
 
     function refresh() {
@@ -219,6 +263,16 @@
     }
 
     scrollCbs.push(update);
+    if (cue) {
+      cue.addEventListener("pointerdown", function (e) {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        advance();
+      });
+      cue.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); advance(); }
+      });
+    }
     resizeCbs.push(refresh);
     if (mq.addEventListener) mq.addEventListener("change", refresh);
     else if (mq.addListener) mq.addListener(refresh);
@@ -525,8 +579,114 @@
     secs.forEach(function (s) { io.observe(s); });
   }
 
+  /* ------------------------------------------------------------------ */
+  /* 12. Audio ambiental + control de volumen                           */
+  /* ------------------------------------------------------------------ */
+  function initAmbientAudio() {
+    var audio = document.querySelector("[data-ambient-audio]");
+    if (!audio) return;
+
+    var control = document.querySelector("[data-volume-control]");
+    var toggle = control ? control.querySelector(".volume-control__toggle") : null;
+    var range = control ? control.querySelector("[data-volume-range]") : null;
+    var value = control ? control.querySelector("[data-volume-value]") : null;
+    var unlockEvents = ["pointerdown", "touchstart", "keydown", "click"];
+    var listening = false;
+    var closeTimer = null;
+
+    audio.volume = 0.6;
+
+    function syncControl() {
+      if (!control) return;
+      var percent = Math.round(audio.volume * 100);
+      control.style.setProperty("--volume", percent + "%");
+      control.classList.toggle("is-muted", audio.muted || percent === 0);
+      if (range && document.activeElement !== range) range.value = percent;
+      if (value) value.textContent = percent + "%";
+      if (toggle) {
+        var muted = audio.muted || percent === 0;
+        toggle.setAttribute("aria-pressed", muted ? "true" : "false");
+        toggle.setAttribute("aria-label", muted ? "Activar música" : "Silenciar música");
+      }
+    }
+
+    function closeControl() {
+      if (!control) return;
+      control.classList.add("is-collapsed");
+      if (document.activeElement && control.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
+    }
+
+    function scheduleClose() {
+      if (!control) return;
+      control.classList.remove("is-collapsed");
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(closeControl, 2600);
+    }
+
+    if (control) {
+      ["pointerenter", "pointermove", "focusin", "input", "change", "click", "keydown"].forEach(function (eventName) {
+        control.addEventListener(eventName, scheduleClose);
+      });
+      control.addEventListener("pointerleave", function () {
+        clearTimeout(closeTimer);
+        closeTimer = setTimeout(closeControl, 2600);
+      });
+    }
+
+    function unbindUnlock() {
+      if (!listening) return;
+      unlockEvents.forEach(function (eventName) {
+        document.removeEventListener(eventName, tryPlay);
+      });
+      listening = false;
+    }
+
+    function bindUnlock() {
+      if (listening) return;
+      unlockEvents.forEach(function (eventName) {
+        document.addEventListener(eventName, tryPlay, { passive: true });
+      });
+      listening = true;
+    }
+
+    function tryPlay() {
+      var playAttempt = audio.play();
+      if (playAttempt && playAttempt.then) {
+        playAttempt.then(unbindUnlock).catch(bindUnlock);
+      } else {
+        unbindUnlock();
+      }
+    }
+
+    if (toggle) {
+      toggle.addEventListener("click", function () {
+        audio.muted = !audio.muted;
+        if (!audio.muted && audio.volume === 0) {
+          audio.volume = 0.6;
+          if (range) range.value = 60;
+        }
+        syncControl();
+        if (!audio.muted) tryPlay();
+      });
+    }
+
+    if (range) {
+      range.addEventListener("input", function () {
+        audio.volume = clamp(parseInt(range.value, 10) / 100, 0, 1);
+        audio.muted = audio.volume === 0;
+        syncControl();
+        if (!audio.muted && audio.paused) tryPlay();
+      });
+    }
+
+    syncControl();
+    tryPlay();
+  }
+
   function init() {
-    var mods = [splitText, initReveal, initIndicators, initParallax, initTimeline,
+    var mods = [initAmbientAudio, splitText, initReveal, initIndicators, initParallax, initTimeline,
                 initCounters, initAsh, initElevator, initStrata, initExcavate,
                 initAshScenes];
     for (var i = 0; i < mods.length; i++) {
