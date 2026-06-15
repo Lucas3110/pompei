@@ -590,9 +590,15 @@
     var toggle = control ? control.querySelector(".volume-control__toggle") : null;
     var range = control ? control.querySelector("[data-volume-range]") : null;
     var value = control ? control.querySelector("[data-volume-value]") : null;
-    var unlockEvents = ["pointerdown", "touchstart", "keydown", "click"];
+    var prompt = document.querySelector("[data-sound-prompt]");
+    var documentUnlockEvents = ["pointerdown", "touchstart", "touchmove", "mousedown", "keydown", "click"];
+    var windowUnlockEvents = ["wheel", "scroll"];
     var listening = false;
+    var lastPlayAttempt = 0;
     var closeTimer = null;
+    var promptTimer = null;
+    var promptFallbackTimer = null;
+    var promptExpired = false;
 
     audio.volume = 0.6;
 
@@ -635,26 +641,65 @@
       });
     }
 
+    function hidePrompt() {
+      clearTimeout(promptTimer);
+      clearTimeout(promptFallbackTimer);
+      if (prompt) prompt.hidden = true;
+    }
+
+    function showPrompt() {
+      if (!prompt || promptExpired || !audio.paused || !prompt.hidden) return;
+      prompt.hidden = false;
+      clearTimeout(promptTimer);
+      promptTimer = setTimeout(function () {
+        promptExpired = true;
+        hidePrompt();
+      }, 10000);
+    }
+
+    if (prompt) {
+      prompt.addEventListener("click", function () {
+        tryPlay();
+      });
+    }
+
     function unbindUnlock() {
       if (!listening) return;
-      unlockEvents.forEach(function (eventName) {
+      documentUnlockEvents.forEach(function (eventName) {
         document.removeEventListener(eventName, tryPlay);
+      });
+      windowUnlockEvents.forEach(function (eventName) {
+        window.removeEventListener(eventName, tryPlay);
       });
       listening = false;
     }
 
     function bindUnlock() {
       if (listening) return;
-      unlockEvents.forEach(function (eventName) {
+      documentUnlockEvents.forEach(function (eventName) {
         document.addEventListener(eventName, tryPlay, { passive: true });
+      });
+      windowUnlockEvents.forEach(function (eventName) {
+        window.addEventListener(eventName, tryPlay, { passive: true });
       });
       listening = true;
     }
 
     function tryPlay() {
+      if (!audio.paused || audio.muted) return;
+      var now = Date.now();
+      if (now - lastPlayAttempt < 250) return;
+      lastPlayAttempt = now;
       var playAttempt = audio.play();
       if (playAttempt && playAttempt.then) {
-        playAttempt.then(unbindUnlock).catch(bindUnlock);
+        playAttempt.then(function () {
+          promptExpired = true;
+          hidePrompt();
+          unbindUnlock();
+        }).catch(function () {
+          bindUnlock();
+          showPrompt();
+        });
       } else {
         unbindUnlock();
       }
@@ -682,7 +727,13 @@
     }
 
     syncControl();
+    bindUnlock();
     tryPlay();
+    // Algunos navegadores dejan play() pendiente sin rechazarlo enseguida.
+    // Si sigue pausado, mostramos igualmente la invitación de activación.
+    promptFallbackTimer = setTimeout(function () {
+      if (audio.paused) showPrompt();
+    }, 500);
   }
 
   function init() {

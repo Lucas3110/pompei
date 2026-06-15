@@ -76,6 +76,9 @@ body {
 }
 
 img { display: block; max-width: 100%; }
+/* <figure> trae margin: 1em 40px por defecto (user-agent): metía las imágenes
+   40px por lado, lo que en mobile las dejaba más angostas que las tarjetas. */
+figure { margin: 0; }
 h1, h2, h3 { margin: 0; font-weight: 700; line-height: 1.05; }
 p { margin: 0; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
@@ -370,6 +373,60 @@ body.ash-hidden .ash { opacity: 0; }
   line-height: var(--lh-xs);
   letter-spacing: 0.2em;
   color: var(--c-stone);
+}
+
+/* Invitación temporal cuando el navegador bloquea el autoplay con sonido.
+   Oculta a pedido: el audio se desbloquea igual en la primera interacción
+   (click/scroll) y el parlante del encabezado controla el volumen.
+   Para reactivar el cartel, quitá este display:none. */
+.sound-prompt { display: none !important; }
+
+.sound-prompt {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba(233, 162, 59, 0.2);
+  border-radius: 999px;
+  color: var(--c-stone);
+  background: rgba(12, 9, 8, 0.5);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  line-height: var(--lh-2xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0.82;
+  margin-top: clamp(1rem, 2.5vh, 1.5rem);
+  animation: soundPromptIn 0.7s var(--ease) both;
+  transition: opacity 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+.sound-prompt[hidden] { display: none; }
+.sound-prompt svg {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  color: var(--c-gold);
+  opacity: 0.85;
+}
+.sound-prompt:hover,
+.sound-prompt:focus-visible {
+  opacity: 1;
+  color: var(--c-cream);
+  border-color: rgba(233, 162, 59, 0.5);
+  background: rgba(20, 14, 12, 0.8);
+}
+@keyframes soundPromptIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 0.82; transform: translateY(0); }
 }
 
 /* ---------- 5. Sistema de aparición (reveal) ---------- */
@@ -1404,10 +1461,35 @@ main > section + .timeline { margin-top: 0; }
     max-width: calc(100% - 2.5rem);
     text-align: center;
   }
+  .sound-prompt {
+    max-width: min(100%, 20rem);
+    padding: 0.65rem 0.85rem;
+    font-size: 0.625rem;
+    white-space: normal;
+  }
   /* El meta "79 d.C. — Hoy" es decorativo y redundante con el eyebrow; se oculta en mobile */
   .masthead__meta { display: none; }
   /* En mobile el cierre puede envolver (el nowrap es sólo para desktop) */
   .closing__title { white-space: normal; }
+}
+
+/* ---- Contención en mobile / tablet chico: nada se sale de la pantalla ---- */
+@media (max-width: 767px) {
+  /* Permite que el contenedor flex se encoja (evita desbordes por min-width:auto) */
+  .scene__inner { min-width: 0; }
+  /* Las tarjetas se centran y se limitan a un % del ancho, siempre dentro
+     del marco de la imagen (que está inset por --frame). */
+  .card {
+    max-width: min(30rem, 88vw);
+    margin-inline: auto;
+  }
+  .card__text,
+  .card__eyebrow { overflow-wrap: break-word; }
+
+  /* El título del cierre ("El Vesubio sigue activo") envuelve y nunca desborda */
+  .closing__title { white-space: normal; overflow-wrap: break-word; }
+  .closing__inner { max-width: 90vw; }
+  .closing__q { overflow-wrap: break-word; }
 }
 
 /* =====================================================================
